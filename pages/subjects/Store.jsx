@@ -4,16 +4,14 @@ import Card from "../../components/Card";
 import styles from "../../styles/Home.module.css";
 
 const Store = () => {
-  let orderAssist = [];
-  let totalPriceAssist = 0;
-
   let [order, setOrder] = useState([]);
   let [totalPrice, setTotalPrice] = useState(0);
 
   let addToOrder = ({ name, price }) => {
     console.log("add to order!", name, price);
     setTotalPrice(totalPrice + price);
-    setOrder([...order, name]);
+    setOrder([...order, { name: name, price: price }]);
+    console.log(order);
   };
 
   return (
@@ -21,11 +19,19 @@ const Store = () => {
       <h2 className={styles.title}>store</h2>
       <div className={styles.innerContainer}>
         <div className={styles.divOrderList}>
-          <div className={styles.order}>
+          <div className={styles.order} style={{ float: "inline-end" }}>
             <h2>order</h2>
+            {order.map((item) => {
+              return (
+                <div className={styles.orderList}>
+                  <div>{item.name}</div>
+                  <div>{item.price}$</div>
+                </div>
+              );
+            })}
           </div>
           <div className={styles.total}>
-            <div className={styles.inTotal}> total price : {totalPrice}</div>
+            <div className={styles.inTotal}> total price : {totalPrice} $</div>
             <div className={styles.inTotal}>{order.length} items</div>
           </div>
         </div>
