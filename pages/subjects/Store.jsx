@@ -10,8 +10,18 @@ const Store = () => {
   let addToOrder = ({ name, price }) => {
     console.log("add to order!", name, price);
     setTotalPrice(totalPrice + price);
-    setOrder([...order, { name: name, price: price }]);
+    setOrder([...order, { name: name, price: price, id: Math.random() }]);
     console.log(order);
+  };
+
+  let removeFromOrder = (e) => {
+    let itemId = e.target.id;
+    let itemPrice = e.target.attributes.price.value;
+    let newOrder = order.filter((item) => {
+      return item.id != itemId;
+    });
+    setOrder(newOrder);
+    setTotalPrice(totalPrice - itemPrice);
   };
 
   return (
@@ -26,6 +36,13 @@ const Store = () => {
                 <div className={styles.orderList}>
                   <div>{item.name}</div>
                   <div>{item.price}$</div>
+                  <button
+                    id={item.id}
+                    price={item.price}
+                    onClick={(e) => removeFromOrder(e)}
+                  >
+                    test
+                  </button>
                 </div>
               );
             })}
