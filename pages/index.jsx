@@ -1,6 +1,10 @@
+//css
+import "bootstrap/dist/css/bootstrap.min.css";
+import styles from "../styles/Home.module.css";
+
+//components
 import Head from "next/head";
 import Image from "next/image";
-import styles from "../styles/Home.module.css";
 import baseData from "../baseData";
 import LinkCard from "../components/linkCard";
 

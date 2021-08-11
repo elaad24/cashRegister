@@ -121,6 +121,7 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
+  justify-content: ;
 }
 
 .order {
@@ -172,6 +173,9 @@
   margin: 7px 5px;
   border: rgb(164, 163, 165) 1px solid;
   justify-content: space-around;
+}
+.med_button {
+  width: fit-content;
 }
 @media (max-width: 600px) {
   .grid {
