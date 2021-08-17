@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import storeData from "../../storeData";
+/* import storeData from "../../storeData"; */
 import Card from "../../components/Card";
 import styles from "../../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/link";
 
-const Store = () => {
+import handler, { mysql } from "../api/endpoint";
+
+const Store = (props) => {
   let [order, setOrder] = useState([]);
   let [totalPrice, setTotalPrice] = useState(0);
 
@@ -30,6 +32,7 @@ const Store = () => {
     setOrder([]);
     setTotalPrice(0);
   };
+
   return (
     <div>
       <div className="d-flex justify-content-between ">
@@ -82,7 +85,7 @@ const Store = () => {
           {/*           <div className={styles.find}>location</div>
            */}{" "}
           <div className={styles.grid}>
-            {storeData.map((item) => {
+            {props.result.map((item) => {
               return (
                 <Card
                   key={item.nama}
@@ -101,5 +104,24 @@ const Store = () => {
     </div>
   );
 };
+
+export async function getStaticProps(context) {
+  const qry = `SELECT * FROM products`;
+
+  const result = await handler(mysql, qry);
+  console.log(result);
+
+  return {
+    props: {
+      result: result.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        item_group: item.item_group,
+        color: item.color,
+      })),
+    },
+  };
+}
 
 export default Store;

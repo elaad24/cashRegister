@@ -7,4 +7,7 @@ export default [
   { name: "Milkshake", price: 20, color: "lightslategrey" },
   { name: "Coffee", price: 16, color: "tan" },
   { name: "Wine", price: 13, color: "indianred" },
+  { name: "vodka", price: 25, color: "#60ea8c" },
+  { name: "beer", price: 22, color: "#ff882d" },
+  { name: "tea", price: 8, color: "#6f47ef" },
 ];
