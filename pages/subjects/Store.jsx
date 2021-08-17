@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-/* import storeData from "../../storeData"; */
 import Card from "../../components/Card";
 import styles from "../../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,10 +11,8 @@ const Store = (props) => {
   let [totalPrice, setTotalPrice] = useState(0);
 
   const addToOrder = ({ name, price }) => {
-    console.log("add to order!", name, price);
     setTotalPrice(totalPrice + price);
     setOrder([...order, { name: name, price: price, id: Math.random() }]);
-    console.log(order);
   };
 
   const removeFromOrder = (e) => {
@@ -31,6 +28,10 @@ const Store = (props) => {
   const deleteOrder = () => {
     setOrder([]);
     setTotalPrice(0);
+  };
+
+  const pay = () => {
+    console.log("pay ");
   };
 
   return (
@@ -101,6 +102,15 @@ const Store = (props) => {
           </div>
         </div>
       </div>
+      <div className="d-flex gap-4">
+        <h4>pay : </h4>
+        <button className="btn btn-success" onClick={() => pay()}>
+          cash
+        </button>
+        <button className="btn btn-success" onClick={() => pay()}>
+          credit
+        </button>
+      </div>
     </div>
   );
 };
@@ -109,7 +119,6 @@ export async function getStaticProps(context) {
   const qry = `SELECT * FROM products`;
 
   const result = await handler(mysql, qry);
-  console.log(result);
 
   return {
     props: {
