@@ -1,15 +1,16 @@
 import style from "../styles/Home.module.css";
 
 const Cash = (props) => {
-  const some = (value) => {
-    console.log(value);
+  const addMoney = (value) => {
+    let temp = Number(value) + Number(props.moneyAmount);
+    props.setMoneyAmount(temp);
   };
   return (
     <button className={style.moneyBtn} value={props.value}>
       <img
         className={style.monieImg}
         src={props.image}
-        onClick={() => some(props.value)}
+        onClick={() => addMoney(props.value)}
       />
     </button>
   );

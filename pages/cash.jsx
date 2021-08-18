@@ -32,9 +32,11 @@ const money = [
 
 const CashPage = () => {
   let [orderPrice, setOrderPrice] = useState(0);
+  let [moneyAmount, setMoneyAmount] = useState(0);
 
   return (
     <div className={styles.container}>
+      <h2 className="d-flex justify-content-center mt-3">payment page</h2>
       <div className={styles.innerContainer}>
         <div
           className={(styles.moneyConteiner, styles.my1)}
@@ -43,7 +45,12 @@ const CashPage = () => {
           <div className={styles.bills} name="bills">
             {money.map((item) =>
               item.type == "bill" ? (
-                <Cash image={item.image.src} value={item.value} />
+                <Cash
+                  image={item.image.src}
+                  value={item.value}
+                  moneyAmount={moneyAmount}
+                  setMoneyAmount={setMoneyAmount}
+                />
               ) : (
                 ""
               )
@@ -52,7 +59,12 @@ const CashPage = () => {
           <div className={styles.coins} name="coines">
             {money.map((item) =>
               item.type == "coin" ? (
-                <Cash image={item.image.src} value={item.value} />
+                <Cash
+                  image={item.image.src}
+                  value={item.value}
+                  moneyAmount={moneyAmount}
+                  setMoneyAmount={setMoneyAmount}
+                />
               ) : (
                 ""
               )
@@ -60,7 +72,13 @@ const CashPage = () => {
           </div>
         </div>
         <div className={(styles.flexGrow1, styles.my1)}>
-          <NumberPad orderPrice={orderPrice} />
+          <NumberPad
+            orderPrice={orderPrice}
+            moneyAmount={moneyAmount}
+            setMoneyAmount={setMoneyAmount}
+          />
+          <h2> order price : {orderPrice}$</h2>
+          <h2> left to pay : {orderPrice - moneyAmount}$</h2>
         </div>
       </div>
     </div>
