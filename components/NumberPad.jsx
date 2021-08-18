@@ -14,10 +14,11 @@ const NumberPad = ({ orderPrice, moneyAmount, setMoneyAmount }) => {
     setMoneyAmount(0);
   };
 
-  const pay = () => {
-    console.log(orderPrice - moneyAmount, "change");
-    //continue
+  const backSpace = () => {
+    const temp = String(moneyAmount);
+    setMoneyAmount(Number(temp.slice(0, temp.length - 1)));
   };
+
   return (
     <div name="number pad">
       <div className={styles.border_alingCenterText}>{moneyAmount} </div>
@@ -55,8 +56,8 @@ const NumberPad = ({ orderPrice, moneyAmount, setMoneyAmount }) => {
         <button className="btn btn-primary " onClick={() => addNumber(0)}>
           0
         </button>
-        <button className="btn btn-success " onClick={pay}>
-          V
+        <button className="btn btn-secondary " onClick={backSpace}>
+          &#9003;
         </button>
       </div>
     </div>

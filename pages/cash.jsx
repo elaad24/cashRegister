@@ -15,6 +15,8 @@ import TwentyDollars from "../public/TwentyDollars.jpg";
 import FiftyDollars from "../public/FiftyDollars.jpg";
 import HundredDollars from "../public/HundredDollars.jpg";
 import { useState } from "react";
+import { useRouter } from "next/dist/client/router";
+import Link from "next/link";
 
 const money = [
   { name: "Cent", value: "0.01", image: Cent, type: "coin" },
@@ -30,9 +32,19 @@ const money = [
   { name: "HundredDollar", value: "100", image: HundredDollars, type: "bill" },
 ];
 
-const CashPage = () => {
-  let [orderPrice, setOrderPrice] = useState(0);
+const CashPage = (props) => {
+  const router = useRouter();
+  // get to amout of order from url  params
+  let [orderPrice, setOrderPrice] = useState(router.query.orderPrice);
+  // amount of money that we recived in the order
   let [moneyAmount, setMoneyAmount] = useState(0);
+
+  const pay = () => {
+    console.log(orderPrice - moneyAmount, "change");
+    //continue
+    // open cash drew
+    // redirect to store with param of change
+  };
 
   return (
     <div className={styles.container}>
@@ -77,8 +89,19 @@ const CashPage = () => {
             moneyAmount={moneyAmount}
             setMoneyAmount={setMoneyAmount}
           />
-          <h2> order price : {orderPrice}$</h2>
-          <h2> left to pay : {orderPrice - moneyAmount}$</h2>
+          <div className="d-flex flex-column">
+            <h2> order price : {orderPrice}$</h2>
+
+            {orderPrice - moneyAmount > 0 ? (
+              <h2> left to pay : {orderPrice - moneyAmount}$</h2>
+            ) : (
+              <Link href={`/subjects/Store?change=${moneyAmount - orderPrice}`}>
+                <button className="btn btn-success " onClick={pay}>
+                  <h1>finsh oreder</h1>
+                </button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>

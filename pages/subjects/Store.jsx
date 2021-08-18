@@ -5,10 +5,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/link";
 
 import handler, { mysql } from "../api/endpoint";
+import { useRouter } from "next/dist/client/router";
 
 const Store = (props) => {
+  // the order list with all the data from the order
   let [order, setOrder] = useState([]);
+  // the order total price amount - only the final price
   let [totalPrice, setTotalPrice] = useState(0);
+  // the change that need to return to the costumer from the last order
+  const router = useRouter();
+  let [change, setChange] = useState(router.query.change);
 
   const addToOrder = ({ name, price }) => {
     setTotalPrice(totalPrice + price);
@@ -30,7 +36,7 @@ const Store = (props) => {
     setTotalPrice(0);
   };
 
-  const pay = () => {
+  const payCash = () => {
     console.log("pay ");
   };
 
@@ -58,24 +64,30 @@ const Store = (props) => {
               )}
               <h2>order</h2>
             </div>
-            {order.map((item) => {
-              return (
-                <div className={styles.orderList}>
-                  <div>{item.name}</div>
-                  <div>{item.price}$</div>
-                  <div>
-                    <button
-                      className="btn btn-danger"
-                      id={item.id}
-                      price={item.price}
-                      onClick={(e) => removeFromOrder(e)}
-                    >
-                      X
-                    </button>
+            {order.length != 0 ? (
+              order.map((item) => {
+                return (
+                  <div className={styles.orderList}>
+                    <div>{item.name}</div>
+                    <div>{item.price}$</div>
+                    <div>
+                      <button
+                        className="btn btn-danger"
+                        id={item.id}
+                        price={item.price}
+                        onClick={(e) => removeFromOrder(e)}
+                      >
+                        X
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : change > 0 ? (
+              <h1>change : {change}</h1>
+            ) : (
+              ""
+            )}
           </div>
           <div className={styles.total}>
             <div className={styles.inTotal}> total price : {totalPrice} $</div>
@@ -104,9 +116,11 @@ const Store = (props) => {
       </div>
       <div className="d-flex gap-4">
         <h4>pay : </h4>
-        <button className="btn btn-success" onClick={() => pay()}>
-          cash
-        </button>
+        <Link href={`/cash?orderPrice=${totalPrice}`}>
+          <button className="btn btn-success" onClick={() => payCash()}>
+            cash
+          </button>
+        </Link>
         <button className="btn btn-success" onClick={() => pay()}>
           credit
         </button>

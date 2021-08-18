@@ -2,7 +2,10 @@ import style from "../styles/Home.module.css";
 
 const Cash = (props) => {
   const addMoney = (value) => {
-    let temp = Number(value) + Number(props.moneyAmount);
+    //round the number to the second decimel point
+    let temp =
+      Math.round((Number(value) + Number(props.moneyAmount)) * 100) / 100;
+
     props.setMoneyAmount(temp);
   };
   return (
