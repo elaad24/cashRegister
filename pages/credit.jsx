@@ -12,8 +12,9 @@ const CashPage = (props) => {
 
   const pay = () => {
     console.log("pay");
-    //continue
-    // open cash drew
+
+    console.log("aproved");
+    router.push("/subjects/Store");
   };
 
   // function to tell the card reader that need to check for card

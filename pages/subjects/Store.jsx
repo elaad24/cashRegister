@@ -36,10 +36,6 @@ const Store = (props) => {
     setTotalPrice(0);
   };
 
-  const payCash = () => {
-    console.log("pay ");
-  };
-
   return (
     <div>
       <div className="d-flex justify-content-between ">
@@ -117,13 +113,11 @@ const Store = (props) => {
       <div className="d-flex gap-4">
         <h4>pay : </h4>
         <Link href={`/cash?orderPrice=${totalPrice}`}>
-          <button className="btn btn-success" onClick={() => payCash()}>
-            cash
-          </button>
+          <button className="btn btn-success">cash</button>
         </Link>
-        <button className="btn btn-success" onClick={() => pay()}>
-          credit
-        </button>
+        <Link href={`/credit?orderPrice=${totalPrice}`}>
+          <button className="btn btn-success">credit</button>
+        </Link>
       </div>
     </div>
   );

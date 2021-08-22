@@ -93,7 +93,14 @@ const CashPage = (props) => {
             <h2> order price : {orderPrice}$</h2>
 
             {orderPrice - moneyAmount > 0 ? (
-              <h2> left to pay : {orderPrice - moneyAmount}$</h2>
+              <>
+                <h2> left to pay : {orderPrice - moneyAmount}$</h2>
+                <Link href={`/credit?orderPrice=${orderPrice}`}>
+                  <button className="btn btn-warning">
+                    pay with credit card{" "}
+                  </button>
+                </Link>
+              </>
             ) : (
               <Link href={`/subjects/Store?change=${moneyAmount - orderPrice}`}>
                 <button className="btn btn-success " onClick={pay}>
