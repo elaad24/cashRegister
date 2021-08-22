@@ -84,7 +84,7 @@ const Store = (props) => {
                 );
               })
             ) : change > 0 ? (
-              <h1>change : {change}</h1>
+              <h1>change : {change}$</h1>
             ) : (
               ""
             )}
