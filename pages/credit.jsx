@@ -4,11 +4,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../redux/sllice/storeSlice";
 
 const CashPage = (props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
+
   // get to amout of order from url  params
   let [orderPrice, setOrderPrice] = useState(router.query.orderPrice);
+
+  //check if the money amount isn't 0
+
+  let orderPriceIsZero = true;
+  if (orderPrice > 0) {
+    orderPriceIsZero = false;
+  }
 
   const pay = () => {
     console.log("pay");
@@ -24,6 +35,8 @@ const CashPage = (props) => {
     // read the card
     // make a trunsaction
     //redirect to store
+
+    dispatch(clearCart());
     console.log("aproved");
     router.push("/subjects/Store");
   };
@@ -60,9 +73,19 @@ const CashPage = (props) => {
 
   return (
     <div className={styles.container}>
-      <h2 className="d-flex justify-content-center mt-3">
-        payment page - credit{" "}
-      </h2>
+      <div className="d-flex flex-row justify-content-between my-3 ">
+        <div className="">
+          <Link href={`/cash?orderPrice=${orderPrice}`}>
+            <button className="btn btn-primary mx-4">cash</button>
+          </Link>
+
+          <Link href={`subjects/Store?orderPrice=${orderPrice}`}>
+            <button className="btn btn-primary">store</button>
+          </Link>
+        </div>
+        <h2 className="">{" payment page - credit "}</h2>
+        <div></div>
+      </div>
       <h3 className="d-flex justify-content-center mt-3">
         total amount : {orderPrice}
       </h3>
@@ -71,16 +94,16 @@ const CashPage = (props) => {
           {cardManually == false ? (
             <div>
               <div className={styles.find}>XxXxXxXxXxXxXxXxXxXxXxXxXxX</div>
-              <button className="btn btn-primary" onClick={swipeCard}>
-                swipe card{" "}
+              <button
+                className="btn btn-success"
+                onClick={swipeCard}
+                disabled={orderPriceIsZero}
+              >
+                {" swipe card "}
               </button>
               <button className="btn btn-warning" onClick={addCardManually}>
                 add card manually{" "}
               </button>
-
-              <Link href={`/cash?orderPrice=${orderPrice}`}>
-                <button className="btn btn-success">pay with cash</button>
-              </Link>
             </div>
           ) : (
             <div className="d-flex flex-column ">
@@ -150,7 +173,11 @@ const CashPage = (props) => {
                   }
                 />
               </div>
-              <button className="btn btn-success" onClick={pay}>
+              <button
+                className="btn btn-success"
+                onClick={pay}
+                disabled={orderPriceIsZero}
+              >
                 pay
               </button>
               <br />
