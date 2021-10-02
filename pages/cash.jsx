@@ -2,6 +2,12 @@ import Cash from "../components/Cash";
 import styles from "../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NumberPad from "../components/NumberPad";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/dist/client/router";
+import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCart } from "../redux/sllice/storeSlice";
+import { placeOrder } from "./service/orderService";
 
 import Cent from "../public/Cent.png";
 import Nickel from "../public/Nickel.png";
@@ -14,9 +20,6 @@ import TenDollars from "../public/TenDollars.jpg";
 import TwentyDollars from "../public/TwentyDollars.jpg";
 import FiftyDollars from "../public/FiftyDollars.jpg";
 import HundredDollars from "../public/HundredDollars.jpg";
-import { useState } from "react";
-import { useRouter } from "next/dist/client/router";
-import Link from "next/link";
 
 const money = [
   { name: "Cent", value: "0.01", image: Cent, type: "coin" },
@@ -34,21 +37,51 @@ const money = [
 
 const CashPage = (props) => {
   const router = useRouter();
+
   // get to amout of order from url  params
   let [orderPrice, setOrderPrice] = useState(router.query.orderPrice);
+
   // amount of money that we recived in the order
   let [moneyAmount, setMoneyAmount] = useState(0);
 
-  const pay = () => {
+  const dispatch = useDispatch();
+
+  const orderList = useSelector((state) => state.storeReducer.products);
+
+  console.log("orderList", orderList);
+  const payWithCash = async () => {
+    let orderObjFormat = {
+      products: orderList,
+      payType: { pay_With_Cash: true, amount_Of_Cash: moneyAmount },
+    };
     console.log(orderPrice - moneyAmount, "change");
+    try {
+      await placeOrder(orderObjFormat);
+      await dispatch(clearCart());
+    } catch (error) {
+      console.log("error :", error);
+    }
+
     //continue
     // open cash drew
-    // redirect to store with param of change
   };
+
+  //check if the money amount isn't 0
+
+  let orderPriceIsZero = true;
+  if (orderPrice > 0) {
+    orderPriceIsZero = false;
+  }
 
   return (
     <div className={styles.container}>
-      <h2 className="d-flex justify-content-center mt-3">payment page</h2>
+      <div className="d-flex flex-row justify-content-between">
+        <Link href={`/subjects/Store`}>
+          <a className="m-4 btn btn-primary">store </a>
+        </Link>
+        <h2 className=" mt-3">payment page</h2>
+        <div></div>
+      </div>
       <div className={styles.innerContainer}>
         <div
           className={(styles.moneyConteiner, styles.my1)}
@@ -58,6 +91,7 @@ const CashPage = (props) => {
             {money.map((item) =>
               item.type == "bill" ? (
                 <Cash
+                  key={item.value}
                   image={item.image.src}
                   value={item.value}
                   moneyAmount={moneyAmount}
@@ -72,6 +106,7 @@ const CashPage = (props) => {
             {money.map((item) =>
               item.type == "coin" ? (
                 <Cash
+                  key={item.value}
                   image={item.image.src}
                   value={item.value}
                   moneyAmount={moneyAmount}
@@ -103,7 +138,11 @@ const CashPage = (props) => {
               </>
             ) : (
               <Link href={`/subjects/Store?change=${moneyAmount - orderPrice}`}>
-                <button className="btn btn-success " onClick={pay}>
+                <button
+                  className="btn btn-success "
+                  onClick={payWithCash}
+                  disabled={orderPriceIsZero}
+                >
                   <h1>finsh oreder</h1>
                 </button>
               </Link>
