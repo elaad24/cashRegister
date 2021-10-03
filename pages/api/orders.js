@@ -90,7 +90,7 @@ export default async function orders(req, res) {
       res.status(400).json({ error: resonOfBadReq });
     }
   } else {
-    res.status(400).json({ error: "doesnt match any api req " });
+    res.status(400).json({ error: "doesnt match any api req in orders" });
   }
 }
 
