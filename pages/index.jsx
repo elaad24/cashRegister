@@ -7,8 +7,9 @@ import Head from "next/head";
 import Image from "next/image";
 import baseData from "../baseData";
 import LinkCard from "../components/linkCard";
+import handler, { mysql } from "./api/endpoint";
 
-export default function Home() {
+export default function Home(props) {
   return (
     <div className={styles.container}>
       <Head>
@@ -20,7 +21,7 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>cash register first page</h1>
         <div className={styles.grid}>
-          {baseData.map((item) => {
+          {props.result.map((item) => {
             return (
               <LinkCard
                 name={item.name}
@@ -42,4 +43,21 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+export async function getStaticProps(context) {
+  const qry = `SELECT * FROM main_categories`;
+
+  const result = await handler(mysql, qry);
+
+  return {
+    props: {
+      result: result.map((item) => ({
+        id: item.id,
+        name: item.name,
+        address: item.address,
+        color: item.color,
+      })),
+    },
+  };
 }
