@@ -58,6 +58,7 @@ const CashPage = (props) => {
     try {
       await placeOrder(orderObjFormat);
       await dispatch(clearCart());
+      await router.push(`/subjects/Store?change=${moneyAmount - orderPrice}`);
     } catch (error) {
       console.log("error :", error);
     }
@@ -137,15 +138,13 @@ const CashPage = (props) => {
                 </Link>
               </>
             ) : (
-              <Link href={`/subjects/Store?change=${moneyAmount - orderPrice}`}>
-                <button
-                  className="btn btn-success "
-                  onClick={payWithCash}
-                  disabled={orderPriceIsZero}
-                >
-                  <h1>finsh oreder</h1>
-                </button>
-              </Link>
+              <button
+                className="btn btn-success "
+                onClick={payWithCash}
+                disabled={orderPriceIsZero}
+              >
+                <h1>finsh oreder</h1>
+              </button>
             )}
           </div>
         </div>

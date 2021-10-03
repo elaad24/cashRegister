@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "../../components/Card";
 import styles from "../../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -6,8 +6,12 @@ import Link from "next/link";
 
 import handler, { mysql } from "../api/endpoint";
 import { useRouter } from "next/dist/client/router";
+import { useDispatch } from "react-redux";
+import { addItem, clearCart, removeItem } from "../../redux/sllice/storeSlice";
+import { useSelector } from "react-redux";
 
 const Store = (props) => {
+  const dispatch = useDispatch();
   // the order list with all the data from the order
   let [order, setOrder] = useState([]);
   // the order total price amount - only the final price
@@ -16,9 +20,28 @@ const Store = (props) => {
   const router = useRouter();
   let [change, setChange] = useState(router.query.change);
 
-  const addToOrder = ({ name, price }) => {
+  const orderFromRedux = useSelector((state) => state.storeReducer.products);
+  const orderPriceFromRedux = useSelector(
+    (state) => state.storeReducer.totalPrice
+  );
+  useEffect(async () => {
+    await setOrder(orderFromRedux);
+    await setTotalPrice(orderPriceFromRedux);
+  }, []);
+
+  const addToOrder = ({ name, price, item_id, item_group }) => {
+    //qty 1 temp ! need to change and calc the thumber of the same item
+    let product = {
+      name: name,
+      price: price,
+      id: Math.random(),
+      item_id,
+      item_group,
+      qty: 1,
+    };
     setTotalPrice(totalPrice + price);
-    setOrder([...order, { name: name, price: price, id: Math.random() }]);
+    setOrder([...order, product]);
+    dispatch(addItem(product));
   };
 
   const removeFromOrder = (e) => {
@@ -29,11 +52,14 @@ const Store = (props) => {
     });
     setOrder(newOrder);
     setTotalPrice(totalPrice - itemPrice);
+    console.dir(e.target);
+    dispatch(removeItem(e.target.id));
   };
 
   const deleteOrder = () => {
     setOrder([]);
     setTotalPrice(0);
+    dispatch(clearCart());
   };
 
   return (
@@ -63,7 +89,7 @@ const Store = (props) => {
             {order.length != 0 ? (
               order.map((item) => {
                 return (
-                  <div className={styles.orderList}>
+                  <div className={styles.orderList} key={item.id}>
                     <div>{item.name}</div>
                     <div>{item.price}$</div>
                     <div>
@@ -101,10 +127,10 @@ const Store = (props) => {
                   name={item.name}
                   price={item.price}
                   color={item.color}
+                  item_id={item.id}
+                  item_group={item.item_group}
                   callback={addToOrder}
-                >
-                  {" "}
-                </Card>
+                ></Card>
               );
             })}
           </div>

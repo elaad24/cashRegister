@@ -4,8 +4,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import { useRouter } from "next/dist/client/router";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../redux/sllice/storeSlice";
+import { placeOrder } from "./service/orderService";
 
 const CashPage = (props) => {
   const router = useRouter();
@@ -28,17 +29,31 @@ const CashPage = (props) => {
     router.push("/subjects/Store");
   };
 
+  const orderList = useSelector((state) => state.storeReducer.products);
+
+  console.log("orderList", orderList);
+
   // function to tell the card reader that need to check for card
   // and to charge the card
-  let swipeCard = () => {
+  let swipeCard = async () => {
     console.log("card swiped ");
+    // need to add api that realy can read card and take money
     // read the card
     // make a trunsaction
     //redirect to store
 
-    dispatch(clearCart());
-    console.log("aproved");
-    router.push("/subjects/Store");
+    let orderObjFormat = {
+      products: orderList,
+      payType: { pay_With_Cash: false, amount_Of_Cash: null },
+    };
+    try {
+      await placeOrder(orderObjFormat);
+      await dispatch(clearCart());
+      console.log("aproved");
+      await router.push("/subjects/Store");
+    } catch (error) {
+      console.log("error :", error);
+    }
   };
 
   // var to open boxes for insert card manually
