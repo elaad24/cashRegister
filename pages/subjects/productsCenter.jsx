@@ -6,7 +6,6 @@ import ItemModal from "../../components/ItemModal";
 
 const productsCenter = (props) => {
   let headersTitles = Object.keys(props.products[0]);
-  console.log(headersTitles);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [tempItem, setTempItem] = useState({});

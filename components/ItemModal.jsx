@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { addProduct, updateProduct } from "../pages/service/productsService";
+
 const ItemModal = ({
   id,
   name,
@@ -16,7 +17,6 @@ const ItemModal = ({
   const priceRef = useRef(price);
   const item_groupRef = useRef(item_group);
   const colorRef = useRef(color);
-
   let [nameError, setNameError] = useState("");
   let [priceError, setPriceError] = useState("");
   let [colorError, setColorError] = useState("");
@@ -134,7 +134,7 @@ const ItemModal = ({
           </Form.Group>
           <Form.Group>
             <Form.Label>
-              {"Description "}
+              {"Item group "}
               <span>
                 <small className="text-danger">* require</small>
               </span>
@@ -152,21 +152,15 @@ const ItemModal = ({
           </Form.Group>
           <Form.Group>
             <Form.Label>
-              {"Category "}
+              {"color "}
               <span>
                 <small className="text-danger">* require</small>
               </span>
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
               type="color"
-              defaultValue={
-                colorRef.current?.value == ""
-                  ? colorRef.current?.value
-                  : colorRef.current
-              }
+              defaultValue={colorRef.current}
               ref={colorRef}
-              minLength="3"
               placeholder={colorError}
               required
             />
