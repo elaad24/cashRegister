@@ -2,9 +2,6 @@ import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { addProduct, updateProduct } from "../pages/service/productsService";
 
-// added the input text to add color
-// now just make when the color piker change the text change in the same time*
-
 const ItemModal = ({
   id,
   name,
