@@ -2,6 +2,9 @@ import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { addProduct, updateProduct } from "../pages/service/productsService";
 
+// added the input text to add color
+// now just make when the color piker change the text change in the same time*
+
 const ItemModal = ({
   id,
   name,
@@ -73,6 +76,14 @@ const ItemModal = ({
 
   const closeModal = () => {
     setModalState(false);
+  };
+
+  const colorTxtInput = (e) => {
+    const pattern = new RegExp("^#([a-fA-F0-9]){3}$|[a-fA-F0-9]{6}$");
+    if (pattern.test(e.target.value)) {
+      colorRef.current.value = e.target.value;
+    }
+    console.log(pattern.test(e.target.value) ? "valid" : "not valid");
   };
 
   return (
@@ -165,6 +176,12 @@ const ItemModal = ({
               required
             />
           </Form.Group>
+          <input
+            type="text"
+            defaultValue={colorRef.current}
+            onChange={(e) => colorTxtInput(e)}
+            placeholder={"hexdecimal color - #ffffff"}
+          />
         </Form>
       </Modal.Body>
       <Modal.Footer>
