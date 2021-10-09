@@ -3,6 +3,8 @@ import handler, { mysql } from "../api/endpoint";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { deleteItem } from "../service/productsService";
 import ItemModal from "../../components/ItemModal";
+import Link from "next/link";
+import styles from "../../styles/Home.module.css";
 
 const productsCenter = (props) => {
   let headersTitles = Object.keys(props.products[0]);
@@ -26,6 +28,15 @@ const productsCenter = (props) => {
 
   return (
     <div>
+      <div className="d-flex justify-content-between ">
+        {/* <button className="m-4 btn btn-primary" onClick={}>home </button> */}
+
+        <Link href={`/`}>
+          <a className="m-4 btn btn-primary">home</a>
+        </Link>
+        <h2 className={styles.title}>products center</h2>
+        <div></div>
+      </div>
       {tempItem !== {} && modalOpen === true ? (
         <ItemModal
           id={tempItem?.id}
