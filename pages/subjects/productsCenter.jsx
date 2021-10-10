@@ -11,13 +11,15 @@ const productsCenter = (props) => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [tempItem, setTempItem] = useState({});
+  const [actionType, setActionType] = useState("");
 
   const closeModal = () => {
     setModalOpen(false);
   };
 
-  const openModal = (item) => {
+  const openModal = (item, actionType) => {
     setTempItem(item);
+    setActionType(actionType);
     setModalOpen(true);
   };
 
@@ -29,13 +31,18 @@ const productsCenter = (props) => {
   return (
     <div>
       <div className="d-flex justify-content-between ">
-        {/* <button className="m-4 btn btn-primary" onClick={}>home </button> */}
-
         <Link href={`/`}>
           <a className="m-4 btn btn-primary">home</a>
         </Link>
         <h2 className={styles.title}>products center</h2>
-        <div></div>
+        <div>
+          <button
+            className="btn btn-success m-4"
+            onClick={() => openModal({}, "add")}
+          >
+            {"add new product"}
+          </button>
+        </div>
       </div>
       {tempItem !== {} && modalOpen === true ? (
         <ItemModal
@@ -46,7 +53,7 @@ const productsCenter = (props) => {
           color={tempItem?.color}
           modalState={modalOpen}
           setModalState={setModalOpen}
-          submitAction={"update"}
+          submitAction={actionType}
         />
       ) : (
         ""
@@ -74,7 +81,7 @@ const productsCenter = (props) => {
                   <td className="d-flex justify-content-center gap-4">
                     <button
                       className="btn btn-warning"
-                      onClick={() => openModal(item)}
+                      onClick={() => openModal(item, "update")}
                     >
                       {"Edit"}
                     </button>
