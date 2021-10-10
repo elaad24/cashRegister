@@ -28,69 +28,125 @@ const ItemModal = ({
   let [with_permissionError, setWith_permissionError] = useState("");
   let [telephone_numberError, setTelephone_numberError] = useState("");
 
+  const validinputs = () => {
+    console.log("validation start");
+    if (
+      typeof NameRef.current.value != "string" ||
+      NameRef.current.value.length <= 1
+    ) {
+      setNameError("name must be string and longer then 2 character ");
+      console.log(nameError);
+      return false;
+    } else {
+      setNameError("");
+    }
+    if (
+      typeof lastNameRef.current.value != "string" ||
+      lastNameRef.current.value.length <= 1
+    ) {
+      setLastNameError("last name must be string and longer then 2 character ");
+      console.log(lastNameError);
+      return false;
+    } else {
+      setLastNameError("");
+    }
+    if (user_pinRef.current.value < 0) {
+      setUser_pinError("user pin number must be bigger then 0 ");
+      console.log(user_pinError);
+      return false;
+    } else {
+      setUser_pinError("");
+    }
+    if (
+      with_permissionRef.current.value != true ||
+      with_permissionRef.current.value != false
+    ) {
+      setWith_permissionError("with permission  must be  true or false  ");
+      console.log(telephone_number);
+      return false;
+    } else {
+      setWith_permissionError("");
+    }
+    if (
+      typeof telephone_numberRef.current.value != "number" ||
+      telephone_numberRef.current.value.length <= 7
+    ) {
+      setTelephone_numberError(
+        "telephone number must be number and longer then 7 character "
+      );
+      console.log(telephone_number);
+      return false;
+    } else {
+      setTelephone_numberError("");
+    }
+    return true;
+  };
+
   async function handleSubmit(e) {
-    // function that send data to database
-    const user = {
-      id: idRef?.current,
-      name: NameRef.current.value,
-      last_name: lastNameRef.current.value,
-      user_pin: user_pinRef.current.value,
-      with_permission: with_permissionRef.current.value,
-      telephone_number: telephone_numberRef.current.value,
-    };
-    setNameError("");
-    setLastNameError("");
-    setUser_pinError("");
-    setWith_permissionError("");
-    setTelephone_numberError("");
-    e.preventDefault();
-    if (submitAction == "add") {
-      try {
-        await addUser(user);
-        await closeModal();
-        await window.location.reload();
-      } catch (err) {
-        if (err?.response?.data?.error?.name) {
-          setNameError(err.response.data.error.name);
-        }
-        if (err?.response?.data?.error?.lastName) {
-          setLastNameError(err.response.data.error.lastName);
-        }
-        if (err?.response?.data?.error?.user_pin) {
-          setUser_pinError(err.response.data.error.user_pin);
-        }
-        if (err?.response?.data?.error?.with_permission) {
-          setWith_permissionError(err.response.data.error.with_permission);
-        }
-        if (err?.response?.data?.error?.telephone_number) {
-          setTelephone_numberError(err.response.data.error.telephone_number);
-        }
+    if (validinputs()) {
+      // function that send data to database
+      const user = {
+        id: idRef?.current,
+        name: NameRef.current.value,
+        last_name: lastNameRef.current.value,
+        user_pin: user_pinRef.current.value,
+        with_permission: with_permissionRef.current.value,
+        telephone_number: telephone_numberRef.current.value,
+      };
+      setNameError("");
+      setLastNameError("");
+      setUser_pinError("");
+      setWith_permissionError("");
+      setTelephone_numberError("");
+      e.preventDefault();
+      if (submitAction == "add") {
+        try {
+          await addUser(user);
+          await closeModal();
+          await window.location.reload();
+        } catch (err) {
+          if (err?.response?.data?.error?.name) {
+            setNameError(err.response.data.error.name);
+          }
+          if (err?.response?.data?.error?.lastName) {
+            setLastNameError(err.response.data.error.lastName);
+          }
+          if (err?.response?.data?.error?.user_pin) {
+            setUser_pinError(err.response.data.error.user_pin);
+          }
+          if (err?.response?.data?.error?.with_permission) {
+            setWith_permissionError(err.response.data.error.with_permission);
+          }
+          if (err?.response?.data?.error?.telephone_number) {
+            setTelephone_numberError(err.response.data.error.telephone_number);
+          }
 
-        return err;
-      }
-    } else if (submitAction == "update") {
-      try {
-        await updateUser(user);
-        await closeModal();
-        await window.location.reload();
-      } catch (err) {
-        if (err?.response?.data?.error?.name) {
-          setNameError(err.response.data.error.name);
+          return err;
         }
-        if (err?.response?.data?.error?.lastName) {
-          setLastNameError(err.response.data.error.lastName);
-        }
-        if (err?.response?.data?.error?.user_pin) {
-          setUser_pinError(err.response.data.error.user_pin);
-        }
-        if (err?.response?.data?.error?.with_permission) {
-          setWith_permissionError(err.response.data.error.with_permission);
-        }
-        if (err?.response?.data?.error?.telephone_number) {
-          setTelephone_numberError(err.response.data.error.telephone_number);
-        }
+      } else if (submitAction == "update") {
+        try {
+          await updateUser(user);
+          await closeModal();
+          await window.location.reload();
+        } catch (err) {
+          if (err?.response?.data?.error?.name) {
+            setNameError(err.response.data.error.name);
+          }
+          if (err?.response?.data?.error?.lastName) {
+            setLastNameError(err.response.data.error.lastName);
+          }
+          if (err?.response?.data?.error?.user_pin) {
+            setUser_pinError(err.response.data.error.user_pin);
+          }
+          if (err?.response?.data?.error?.with_permission) {
+            setWith_permissionError(err.response.data.error.with_permission);
+          }
+          if (err?.response?.data?.error?.telephone_number) {
+            setTelephone_numberError(err.response.data.error.telephone_number);
+          }
 
-        return err;
+          return err;
+        }
       }
     }
   }
@@ -119,9 +175,16 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {nameError ? (
+                <>
+                  <br /> <small className="text-danger">{nameError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={nameError ? "is-invalid" : ""}
               type="text"
               defaultValue={
                 NameRef.current?.value == ""
@@ -130,7 +193,7 @@ const ItemModal = ({
               }
               ref={NameRef}
               minLength="2"
-              placeholder={nameError}
+              placeholder={nameError || "user's first name "}
               required
             />
           </Form.Group>
@@ -140,9 +203,16 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {lastNameError ? (
+                <>
+                  <br /> <small className="text-danger">{lastNameError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={lastNameError ? "is-invalid" : ""}
               type="text"
               defaultValue={
                 lastNameRef.current?.value == ""
@@ -151,20 +221,26 @@ const ItemModal = ({
               }
               ref={lastNameRef}
               minLength="2"
-              placeholder={lastNameError}
+              placeholder={lastNameError || "user's last name "}
               required
             />
           </Form.Group>
           <Form.Group>
             <Form.Label>
               {"User pin"}
-
               <span>
                 <small className="text-danger">* require</small>
-              </span>
+              </span>{" "}
+              {user_pinError ? (
+                <>
+                  <br /> <small className="text-danger">{user_pinError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={user_pinError ? "is-invalid" : ""}
               type="number"
               defaultValue={
                 user_pinRef.current?.value == ""
@@ -173,7 +249,7 @@ const ItemModal = ({
               }
               ref={user_pinRef}
               min="0.01"
-              placeholder={user_pinError}
+              placeholder={"user's pin code "}
               required
             />
           </Form.Group>
@@ -182,31 +258,39 @@ const ItemModal = ({
               {"with permisson"}
               <span>
                 <small className="text-danger">* require</small>
-              </span>
+              </span>{" "}
+              {with_permissionError ? (
+                <>
+                  <br />{" "}
+                  <small className="text-danger">{with_permissionError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
-            <Form.Control
-              className="placeholder-danger"
-              type="text"
-              defaultValue={
-                with_permissionRef.current?.value == ""
-                  ? with_permissionRef.current?.value
-                  : with_permissionRef.current == 1
-                  ? true
-                  : false
-              }
-              ref={with_permissionRef}
-              placeholder={with_permissionError}
-              required
-            />
+
+            <Form.Select ref={with_permissionRef}>
+              <option value={false}>False</option>
+              <option value={true}>True</option>
+            </Form.Select>
           </Form.Group>
           <Form.Group>
             <Form.Label>
               {"Telephone number"}
               <span>
                 <small className="text-danger">* require</small>
-              </span>
+              </span>{" "}
+              {telephone_numberError ? (
+                <>
+                  <br />{" "}
+                  <small className="text-danger">{telephone_numberError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
+              className={telephone_numberError ? "is-invalid" : ""}
               type="number"
               defaultValue={
                 telephone_numberRef.current?.value == ""
@@ -214,7 +298,7 @@ const ItemModal = ({
                   : telephone_numberRef.current
               }
               ref={telephone_numberRef}
-              placeholder={telephone_numberError}
+              placeholder={telephone_numberError || "user's phone number  "}
               required
             />
           </Form.Group>
