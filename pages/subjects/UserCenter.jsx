@@ -11,13 +11,15 @@ const UserCenter = (props) => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [tempUser, setTempUser] = useState({});
+  const [actionType, setActionType] = useState("");
 
   const closeModal = () => {
     setModalOpen(false);
   };
 
-  const openModal = (user) => {
+  const openModal = (user, actionType) => {
     setTempUser(user);
+    setActionType(actionType);
     setModalOpen(true);
   };
 
@@ -29,13 +31,18 @@ const UserCenter = (props) => {
   return (
     <div>
       <div className="d-flex justify-content-between ">
-        {/* <button className="m-4 btn btn-primary" onClick={}>home </button> */}
-
         <Link href={`/`}>
           <a className="m-4 btn btn-primary">home</a>
         </Link>
-        <h2 className={styles.title}>users center</h2>
-        <div></div>
+        <h2 className={styles.title}>{"users center"}</h2>
+        <div>
+          <button
+            className="btn btn-success m-4"
+            onClick={() => openModal({}, "add")}
+          >
+            {"add new user"}
+          </button>
+        </div>
       </div>
       {tempUser !== {} && modalOpen === true ? (
         <UserModal
@@ -47,7 +54,7 @@ const UserCenter = (props) => {
           telephone_number={tempUser?.telephone_number}
           modalState={modalOpen}
           setModalState={setModalOpen}
-          submitAction={"update"}
+          submitAction={actionType}
         />
       ) : (
         ""
@@ -76,7 +83,7 @@ const UserCenter = (props) => {
                   <td className="d-flex justify-content-center gap-4">
                     <button
                       className="btn btn-warning"
-                      onClick={() => openModal(user)}
+                      onClick={() => openModal(user, "update")}
                     >
                       {"Edit"}
                     </button>
