@@ -17,56 +17,99 @@ const ItemModal = ({
   const priceRef = useRef(price);
   const item_groupRef = useRef(item_group);
   const colorRef = useRef(color);
+
   let [nameError, setNameError] = useState("");
   let [priceError, setPriceError] = useState("");
   let [colorError, setColorError] = useState("");
+  let [item_groupError, setItem_groupError] = useState("");
+  let [colorValid, setColorValid] = useState(false);
+
+  const validinputs = () => {
+    console.log("validation start");
+    if (
+      typeof NameRef.current.value != "string" ||
+      NameRef.current.value.length <= 1
+    ) {
+      setNameError("name must be string and longer then 2 character ");
+      return false;
+    } else {
+      setNameError("");
+    }
+    if (priceRef.current.value <= 0.1) {
+      setPriceError("price must be bigger then 0.1 ");
+      return false;
+    } else {
+      setPriceError("");
+    }
+    if (!colorValid) {
+      // need to chang it to check if is hex color
+      setColorError("color must be in hexadecimal format  ");
+      return false;
+    } else {
+      setColorError("");
+    }
+    if (
+      typeof item_groupRef.current.value != "string" ||
+      item_groupRef.current.value.length <= 1
+    ) {
+      setItem_groupError(
+        "item group  must be string and longer then 1 character"
+      );
+      return false;
+    } else {
+      setItem_groupError("");
+    }
+    return true;
+  };
 
   async function handleSubmit(e) {
-    // function that send data to database
-    const product = {
-      id: idRef?.current,
-      name: NameRef.current.value,
-      price: priceRef.current.value,
-      item_group: item_groupRef.current.value,
-      color: colorRef.current.value,
-    };
-    setNameError("");
-    setPriceError("");
-    setColorError("");
-    e.preventDefault();
-    if (submitAction == "add") {
-      try {
-        await addProduct(product);
-        await closeModal();
-        await window.location.reload();
-      } catch (err) {
-        if (err?.response?.data?.error?.name) {
-          setNameError(err.response.data.error.name);
+    if (validinputs()) {
+      // function that send data to database
+      const product = {
+        id: idRef?.current,
+        name: NameRef.current.value,
+        price: priceRef.current.value,
+        item_group: item_groupRef.current.value,
+        color: colorRef.current.value,
+      };
+      setNameError("");
+      setPriceError("");
+      setColorError("");
+      e.preventDefault();
+      if (submitAction == "add") {
+        try {
+          await addProduct(product);
+          await closeModal();
+          await window.location.reload();
+        } catch (err) {
+          if (err?.response?.data?.error?.name) {
+            setNameError(err.response.data.error.name);
+          }
+          if (err?.response?.data?.error?.price) {
+            setPriceError(err.response.data.error.price);
+          }
+          if (err?.response?.data?.error?.color) {
+            setColorError(err.response.data.error.color);
+          }
+          return err;
         }
-        if (err?.response?.data?.error?.price) {
-          setPriceError(err.response.data.error.price);
+      } else if (submitAction == "update") {
+        try {
+          await updateProduct(product);
+          await closeModal();
+          await window.location.reload();
+        } catch (err) {
+          if (err?.response?.data?.error?.name) {
+            setNameError(err.response.data.error.name);
+          }
+          if (err?.response?.data?.error?.price) {
+            setPriceError(err.response.data.error.price);
+          }
+          if (err?.response?.data?.error?.color) {
+            setColorError(err.response.data.error.color);
+          }
+          return err;
         }
-        if (err?.response?.data?.error?.color) {
-          setColorError(err.response.data.error.color);
-        }
-        return err;
-      }
-    } else if (submitAction == "update") {
-      try {
-        await updateProduct(product);
-        await closeModal();
-        await window.location.reload();
-      } catch (err) {
-        if (err?.response?.data?.error?.name) {
-          setNameError(err.response.data.error.name);
-        }
-        if (err?.response?.data?.error?.price) {
-          setPriceError(err.response.data.error.price);
-        }
-        if (err?.response?.data?.error?.color) {
-          setColorError(err.response.data.error.color);
-        }
-        return err;
       }
     }
   }
@@ -79,8 +122,12 @@ const ItemModal = ({
     const pattern = new RegExp("^#([a-fA-F0-9]){3}$|[a-fA-F0-9]{6}$");
     if (pattern.test(e.target.value)) {
       colorRef.current.value = e.target.value;
+      setColorValid(true);
+      return true;
     }
     console.log(pattern.test(e.target.value) ? "valid" : "not valid");
+    setColorValid(false);
+    return false;
   };
 
   return (
@@ -103,9 +150,16 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {nameError ? (
+                <>
+                  <br /> <small className="text-danger">{nameError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={nameError ? "form-control is-invalid" : "form-control"}
               type="text"
               defaultValue={
                 NameRef.current?.value == ""
@@ -125,9 +179,18 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {priceError ? (
+                <>
+                  <br /> <small className="text-danger">{priceError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={
+                priceError ? "form-control is-invalid" : "form-control"
+              }
               type="number"
               defaultValue={
                 priceRef.current?.value == ""
@@ -146,9 +209,19 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {item_groupError ? (
+                <>
+                  <br />{" "}
+                  <small className="text-danger">{item_groupError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
-              className="placeholder-danger"
+              className={
+                item_groupError ? " form-control is-invalid" : "form-control"
+              }
               type="text"
               defaultValue={
                 item_groupRef.current?.value == ""
@@ -164,6 +237,13 @@ const ItemModal = ({
               <span>
                 <small className="text-danger">* require</small>
               </span>
+              {colorError ? (
+                <>
+                  <br /> <small className="text-danger">{colorError}</small>
+                </>
+              ) : (
+                ""
+              )}
             </Form.Label>
             <Form.Control
               type="color"
@@ -175,7 +255,8 @@ const ItemModal = ({
           </Form.Group>
           <input
             type="text"
-            defaultValue={colorRef.current}
+            className={colorError ? "form-control is-invalid" : "form-control"}
+            defaultValue={colorRef.current?.value}
             onChange={(e) => colorTxtInput(e)}
             placeholder={"hexdecimal color - #ffffff"}
           />
