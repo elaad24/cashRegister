@@ -12,3 +12,7 @@ export async function updateUser(user) {
 export async function deleteUser(userID) {
   return await http.delete(`${apiURL}users?req=removeUser&userID=${userID}`);
 }
+
+export async function checkIfAdmin(userPin) {
+  return await http.get(`${apiURL}users?req=checkIfAdmin&&userPin=${userPin}`);
+}

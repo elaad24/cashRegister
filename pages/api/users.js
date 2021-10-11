@@ -4,8 +4,9 @@ export default async function users(req, res) {
   if (
     req.method === "DELETE" &&
     req.query.req == "removeUser" &&
-    req.query.productID != undefined
+    req.query.userID != undefined
   ) {
+    //console.log(req.headers.user_ok);
     //http://localhost:3000/api/users?req=removeUser&userID=NUMBER
     const qry = `DELETE FROM employees WHERE employees.id = ${req.query.userID}`;
     const result = await handler(mysql, qry);
@@ -51,7 +52,17 @@ export default async function users(req, res) {
         res.status(400).json({ error: err });
       }
     })();
+  } else if (
+    req.method === "GET" &&
+    req.query.req == "checkIfAdmin" &&
+    req.query.userPin != undefined
+  ) {
+    //http://localhost:3000/api/users?req=checkIfAdmin&userPin=NUMBER
+    const qry = `SELECT with_permission FROM employees WHERE employees.user_pin= ${req.query.userPin}`;
+    const result = await handler(mysql, qry);
+    console.log(result);
+    res.status(200).json(result[0]?.with_permission);
   } else {
-    res.status(400).json({ error: "doesnt match any api req in porducts " });
+    res.status(400).json({ error: "doesnt match any api req in users " });
   }
 }

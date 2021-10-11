@@ -8,8 +8,30 @@ import Image from "next/image";
 import baseData from "../baseData";
 import LinkCard from "../components/linkCard";
 import handler, { mysql } from "./api/endpoint";
+import { useState } from "react";
+import Card from "../components/Card";
+import { checkIfAdmin } from "./service/usersService";
+import UserPinModal from "../components/userPinModal";
 
 export default function Home(props) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [enterPin, setEnterPin] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const enterAsAdmin = async (userPin) => {
+    let { data } = await checkIfAdmin(userPin);
+    if ((data = 1)) {
+      setIsAdmin(true);
+    }
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -33,6 +55,32 @@ export default function Home(props) {
               </LinkCard>
             );
           })}
+          {isAdmin ? (
+            <Card
+              name={<b> exit from admin </b>}
+              color={"rgb(189, 41, 8)"}
+              key={"adminKey"}
+              callback={() => setIsAdmin(false)}
+            />
+          ) : (
+            <Card
+              name={<b> enter as admin </b>}
+              color={"rgb(65, 207, 8)"}
+              key={"adminKey"}
+              callback={() => {
+                openModal();
+              }}
+            />
+          )}
+          {modalOpen ? (
+            <UserPinModal
+              callback={setIsAdmin}
+              modalState={modalOpen}
+              setModalState={setModalOpen}
+            />
+          ) : (
+            ""
+          )}
         </div>
       </main>
 
