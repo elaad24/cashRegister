@@ -57,24 +57,28 @@ const ItemModal = ({
     } else {
       setUser_pinError("");
     }
+    /* realy not sure why always return as true aldow that the value is the same 
     if (
+      with_permissionRef.current.value != "true" ||
+      with_permissionRef.current.value != "false" ||
       with_permissionRef.current.value != true ||
       with_permissionRef.current.value != false
     ) {
       setWith_permissionError("with permission  must be  true or false  ");
-      console.log(telephone_number);
+      console.log(
+        with_permissionRef.current.value,
+        typeof with_permissionRef.current.value
+      );
       return false;
     } else {
       setWith_permissionError("");
-    }
-    if (
-      typeof telephone_numberRef.current.value != "number" ||
-      telephone_numberRef.current.value.length <= 7
-    ) {
+    } */
+    console.log(typeof with_permissionRef.current.value);
+    if (telephone_numberRef.current.value.length <= 7) {
       setTelephone_numberError(
         "telephone number must be number and longer then 7 character "
       );
-      console.log(telephone_number);
+      console.log(telephone_numberRef.current.value);
       return false;
     } else {
       setTelephone_numberError("");
@@ -268,8 +272,7 @@ const ItemModal = ({
                 ""
               )}
             </Form.Label>
-
-            <Form.Select ref={with_permissionRef}>
+            <Form.Select ref={with_permissionRef} defaultValue={false}>
               <option value={false}>False</option>
               <option value={true}>True</option>
             </Form.Select>
