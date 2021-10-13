@@ -1,17 +1,24 @@
-import handler, { mysql } from "./endpoint";
+import handler, {
+  mysql
+} from "./endpoint";
 
 export default async function products(req, res) {
-  if (
-    req.method === "DELETE" &&
+  if (req.method === "DELETE" &&
     req.query.req == "removeItem" &&
-    req.query.productID != undefined
-  ) {
+    req.query.productID != undefined &&
+    (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
+    (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)) {
     //http://localhost:3000/api/products?req=removeItem&productID=NUMBER
     const qry = `DELETE FROM products WHERE products.id = ${req.query.productID}`;
     const result = await handler(mysql, qry);
     console.log(result);
-    res.status(200).json({ and: "item deleted" });
-  } else if (req.method === "POST" && req.query.req == "addProduct") {
+    res.status(200).json({
+      and: "item deleted",
+    });
+  } else if (req.method === "POST" && 
+  req.query.req == "addProduct" &&
+    (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
+    (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)) {
     // localhost:3000/api/products?req=addProduct
 
     const item = req.body;
@@ -22,12 +29,20 @@ export default async function products(req, res) {
       (async () => {
         let result = await handler(mysql, qry);
         console.log(result);
-        res.status(200).json({ ans: `item added` });
+        res.status(200).json({
+          ans: `item added`,
+        });
       })();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({
+        error: err,
+      });
     }
-  } else if (req.method === "PUT" && req.query.req == "updatingProduct") {
+  } else if (req.method === "PUT" &&
+   req.query.req == "updatingProduct"&&
+    (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
+    (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+   ) {
     // localhost:3000/api/products?req=updatingProduct
 
     const itemId = req.body.id;
@@ -43,13 +58,19 @@ export default async function products(req, res) {
       try {
         const result = await handler(mysql, qry);
         console.log(result);
-        await res.status(201).json({ and: "item updated" });
+        await res.status(201).json({
+          and: "item updated",
+        });
       } catch (err) {
-        res.status(400).json({ error: err });
+        res.status(400).json({
+          error: err,
+        });
       }
     })();
   } else {
-    res.status(400).json({ error: "doesnt match any api req in porducts " });
+    res.status(400).json({
+      error: "doesnt match any api req in porducts ",
+    });
   }
 }
 
