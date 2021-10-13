@@ -8,7 +8,7 @@ import Image from "next/image";
 import baseData from "../baseData";
 import LinkCard from "../components/linkCard";
 import handler, { mysql } from "./api/endpoint";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { checkIfAdmin } from "./service/usersService";
 import UserPinModal from "../components/userPinModal";
@@ -26,11 +26,36 @@ export default function Home(props) {
     setModalOpen(true);
   };
 
+  let adminCookie;
+  // this if statment is just becose next js is server side rendernig so window and document
+  // isnt exist when rendering
+  if (typeof window === "object") {
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    adminCookie = getCookie("adminRequest");
+  }
+
+  useEffect(() => {
+    setIsAdmin(adminCookie == "true" ? true : false);
+  }, [adminCookie]);
+
   const enterAsAdmin = async (userPin) => {
     let { data } = await checkIfAdmin(userPin);
+    console.log(data, "line 49");
     if ((data = 1)) {
       setIsAdmin(true);
+      document.cookie = `adminRequest = ${true}`;
+      console.log("set is admin run as true line 53");
     }
+  };
+
+  const exitAsAdmin = () => {
+    setIsAdmin(false);
+    document.cookie = `adminRequest=${false}`;
   };
   return (
     <div className={styles.container}>
@@ -60,7 +85,7 @@ export default function Home(props) {
               name={<b> exit from admin </b>}
               color={"rgb(189, 41, 8)"}
               key={"adminKey"}
-              callback={() => setIsAdmin(false)}
+              callback={() => exitAsAdmin()}
             />
           ) : (
             <Card
@@ -74,7 +99,7 @@ export default function Home(props) {
           )}
           {modalOpen ? (
             <UserPinModal
-              callback={setIsAdmin}
+              callback={enterAsAdmin}
               modalState={modalOpen}
               setModalState={setModalOpen}
             />

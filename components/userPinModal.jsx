@@ -27,7 +27,7 @@ const UserPinModal = ({ callback, modalState, setModalState }) => {
       try {
         const { data } = await checkIfAdmin(pinNumberRef.current.value);
         if (data == 1) {
-          await callback(true);
+          await callback(pinNumberRef.current.value);
         }
         await closeModal();
       } catch (err) {
