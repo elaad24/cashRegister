@@ -60,7 +60,7 @@ const UserCenter = (props) => {
         ""
       )}
       <div className="container  d-flex justify-content-center text-center">
-        <table class="table table-striped">
+        <table className="table table-striped">
           <thead>
             <tr>
               {headersTitles.map((title) => {
