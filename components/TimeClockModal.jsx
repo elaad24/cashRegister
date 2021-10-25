@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { checkIfAdmin } from "../pages/service/usersService";
+import { startShift, endShift } from "../pages/service/usersService";
 
 // check why the req to server are bad
 
@@ -14,7 +14,6 @@ const UserPinModal = ({ callback, modalState, setModalState }) => {
 
   const actionType = (e) => {
     setAction(e.target.id);
-    console.log(e.target.id);
   };
 
   const validinput = () => {
@@ -37,15 +36,22 @@ const UserPinModal = ({ callback, modalState, setModalState }) => {
     return true;
   };
 
-  async function handleSubmit(e) {
+  const startShiftFunction = async () => {
+    console.log(pinNumberRef.current.value);
+    const { data } = await startShift(pinNumberRef.current.value);
+    console.log(data);
+    alert(data);
+  };
+
+  const endShift = async () => {
+    const { data } = await endShift(pinNumberRef.current.value);
+  };
+
+  async function handleSubmit() {
     if (validinput()) {
       // function that send data to database
-      setPinError("");
       try {
-        const { data } = await checkIfAdmin(pinNumberRef.current.value);
-        if (data == 1) {
-          await callback(pinNumberRef.current.value);
-        }
+        await startShiftFunction();
         await closeModal();
       } catch (err) {
         if (err?.response?.data?.error?.pinNumber) {

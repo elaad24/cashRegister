@@ -1,6 +1,10 @@
 import http from "./http";
 import { apiURL } from "./urlEndPoint.json";
 
+export async function getUsers() {
+  return await http.get(`${apiURL}users?req=getUsers`);
+}
+
 export async function addUser(user) {
   return await http.post(`${apiURL}users?req=addUser`, user);
 }
@@ -11,6 +15,14 @@ export async function updateUser(user) {
 
 export async function deleteUser(userID) {
   return await http.delete(`${apiURL}users?req=removeUser&userID=${userID}`);
+}
+
+export async function startShift(userPin) {
+  return await http.post(`${apiURL}users?req=startShift&&userPin=${userPin}`);
+}
+
+export async function endShift(userPin) {
+  return await http.get(`${apiURL}users?req=endShift&&userPin=${userPin}`);
 }
 
 export async function checkIfAdmin(userPin) {
