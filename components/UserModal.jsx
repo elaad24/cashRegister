@@ -109,7 +109,7 @@ const ItemModal = ({
           await closeModal();
           await window.location.reload();
         } catch (err) {
-          if (err?.response?.data?.error?.name) {
+         /*  if (err?.response?.data?.error?.name) {
             setNameError(err.response.data.error.name);
           }
           if (err?.response?.data?.error?.lastName) {
@@ -124,7 +124,7 @@ const ItemModal = ({
           if (err?.response?.data?.error?.telephone_number) {
             setTelephone_numberError(err.response.data.error.telephone_number);
           }
-
+ */
           return err;
         }
       } else if (submitAction == "update") {
@@ -133,7 +133,7 @@ const ItemModal = ({
           await closeModal();
           await window.location.reload();
         } catch (err) {
-          if (err?.response?.data?.error?.name) {
+         /*  if (err?.response?.data?.error?.name) {
             setNameError(err.response.data.error.name);
           }
           if (err?.response?.data?.error?.lastName) {
@@ -147,7 +147,7 @@ const ItemModal = ({
           }
           if (err?.response?.data?.error?.telephone_number) {
             setTelephone_numberError(err.response.data.error.telephone_number);
-          }
+          } */
 
           return err;
         }
