@@ -1,6 +1,4 @@
-import handler, {
-  mysql
-} from "./endpoint";
+import handler, { mysql } from "./endpoint";
 
 export default async function users(req, res) {
   try {
@@ -9,31 +7,29 @@ export default async function users(req, res) {
       const qry = `SELECT * FROM employees`;
       const result = await handler(mysql, qry);
       res.status(200).json(result);
-
-    } else if (req.method === "DELETE" &&
+    } else if (
+      req.method === "DELETE" &&
       req.query.req == "removeUser" &&
       req.query.userID != undefined &&
-      ((req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
-      (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0))) {
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
       //console.log(req.headers.user_ok);
       //http://localhost:3000/api/users?req=removeUser&userID=NUMBER
       const qry = `DELETE FROM employees WHERE employees.id = ${req.query.userID}`;
       const result = await handler(mysql, qry);
       console.log(result);
       res.status(200).json({
-        ans: "user deleted"
+        ans: "user deleted",
       });
-
-    } else if (req.method === "POST" &&
-     req.query.req == "addUser" &&
-    (  (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
-      (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0))) {
+    } else if (
+      req.method === "POST" &&
+      req.query.req == "addUser" &&
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
       // localhost:3000/api/users?req=addUser
 
-      const user = req.body;
-      if(!user.name||!user.last_name||!user.user_pin||!user.telephone_number){
-        res.status(400).json({error:"one or more of essential missing - [name, last name, user_pin, telephone number]"})
-      }
       let qry = `INSERT INTO employees (id, name,last_name,user_pin,with_permission,telephone_number) VALUES 
     (NULL, '${user.name}', '${user.last_name}','${user.user_pin}','${
         user.with_permission == true ? 1 : 0
@@ -44,17 +40,20 @@ export default async function users(req, res) {
           let result = await handler(mysql, qry);
           console.log(result);
           res.status(200).json({
-            ans: `user added`
+            ans: `user added`,
           });
         })();
       } catch (err) {
         res.status(400).json({
-          error: err
+          error: err,
         });
       }
-    } else if (req.method === "PUT" && req.query.req == "updatingUser" &&
-      ((req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0) ||
-      (req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0))) {
+    } else if (
+      req.method === "PUT" &&
+      req.query.req == "updatingUser" &&
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
       // localhost:3000/api/users?req=updatingUser
 
       const userId = req.body.id;
@@ -72,11 +71,11 @@ export default async function users(req, res) {
           const result = await handler(mysql, qry);
           console.log(result);
           await res.status(201).json({
-            and: "user updated"
+            and: "user updated",
           });
         } catch (err) {
           res.status(400).json({
-            error: err
+            error: err,
           });
         }
       })();
@@ -89,10 +88,87 @@ export default async function users(req, res) {
       const qry = `SELECT with_permission FROM employees WHERE employees.user_pin= ${req.query.userPin}`;
       const result = await handler(mysql, qry);
       console.log(result);
-      res.status(200).json(result[0] ?.with_permission);
+      res.status(200).json(result[0]?.with_permission);
+    } else if (
+      req.method === "POST" &&
+      req.query.req == "startShift" &&
+      req.query.userPin != undefined
+    ) {
+      const userPin = req.query.userPin;
+      //http://localhost:3000/api/users?req=startShift&userPin=NUMBER
+
+      const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
+      const result1 = await handler(mysql, qry1);
+
+      if (result1.length == 0) {
+        res.status(400).json("error - wrong pin number ");
+      }
+      const user_name = result1[0].name;
+      const user_last_name = result1[0].last_name;
+      const userID = result1[0].id;
+
+      const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},null,null,0,0)`;
+
+      const result2 = await handler(mysql, qry2);
+      console.log(result2);
+      if (result2.affectedRows == 1) {
+        res.status(201).json(`welcome ${user_name} ${user_last_name} `);
+      }
+    } else if (
+      req.method === "POST" &&
+      req.query.req == "endShift" &&
+      req.query.userPin != undefined
+    ) {
+      const userPin = req.query.userPin;
+      //http://localhost:3000/api/users?req=endShift&userPin=NUMBER
+
+      const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
+      const result1 = await handler(mysql, qry1);
+      console.log(result1);
+      if (result1.length == 0) {
+        res.status(400).json("error - wrong pin number ");
+      }
+      const user_name = result1[0].name;
+      const user_last_name = result1[0].last_name;
+      const userID = result1[0].id;
+
+      const qry2 = `SELECT UNIX_TIMESTAMP(start) as start  from time_clock where user_id=${userID} and completed=0 `;
+      const result2 = await handler(mysql, qry2);
+
+      if (result2[0] == undefined) {
+        res
+          .status(400)
+          .json("error - wrong user or user does not start shift ");
+      }
+      const start = result2[0].start;
+
+      const timeStamp = Math.floor(Date.now() / 1000);
+      const durationInUnix = timeStamp - start;
+
+      const format_time = (uinx) => {
+        const dtFormat = new Intl.DateTimeFormat("en-GB", {
+          timeStyle: "medium",
+          timeZone: "UTC",
+        });
+
+        return dtFormat.format(new Date(uinx * 1e3));
+      };
+
+      const duration = format_time(durationInUnix);
+
+      const qry3 = `UPDATE time_clock SET  finish = FROM_UNIXTIME(${timeStamp}) ,completed = 1 ,duration= '${duration}' where user_id=${userID} and completed=0`;
+
+      const result3 = await handler(mysql, qry3);
+      if (result3.affectedRows == 1) {
+        res
+          .status(201)
+          .json(
+            `goodbay ${user_name} ${user_last_name}  you worked ${duration} `
+          );
+      }
     } else {
       res.status(400).json({
-        error: "doesnt match any api req in users "
+        error: "doesnt match any api req in users ",
       });
     }
   } catch (err) {

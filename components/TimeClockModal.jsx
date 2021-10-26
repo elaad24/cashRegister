@@ -43,15 +43,21 @@ const UserPinModal = ({ callback, modalState, setModalState }) => {
     alert(data);
   };
 
-  const endShift = async () => {
+  const endShiftFunction = async () => {
     const { data } = await endShift(pinNumberRef.current.value);
+    console.log(data);
+    alert(data);
   };
 
   async function handleSubmit() {
     if (validinput()) {
       // function that send data to database
       try {
-        await startShiftFunction();
+        if (action == "start") {
+          await startShiftFunction();
+        } else if (action == "end") {
+          await endShiftFunction();
+        }
         await closeModal();
       } catch (err) {
         if (err?.response?.data?.error?.pinNumber) {

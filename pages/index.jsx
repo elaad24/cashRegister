@@ -12,14 +12,26 @@ import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { checkIfAdmin } from "./service/usersService";
 import UserPinModal from "../components/userPinModal";
+import TimeClockModal from "../components/TimeClockModal";
 
 export default function Home(props) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [enterPin, setEnterPin] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
 
   const closeModal = () => {
     setModalOpen(false);
+  };
+
+  const openAdminModal = () => {
+    setModalType("adminModal");
+    openModal();
+  };
+
+  const openTimClockModal = () => {
+    setModalType("timeClock");
+    openModal();
   };
 
   const openModal = () => {
@@ -48,7 +60,7 @@ export default function Home(props) {
     console.log(data, "line 49");
     if ((data = 1)) {
       setIsAdmin(true);
-      document.cookie = `adminRequest = ${true}`;
+      document.cookie = `adminRequest = ${true};path=/ `;
       console.log("set is admin run as true line 53");
     }
   };
@@ -93,19 +105,30 @@ export default function Home(props) {
               color={"rgb(65, 207, 8)"}
               key={"adminKey"}
               callback={() => {
-                openModal();
+                openAdminModal();
               }}
             />
           )}
-          {modalOpen ? (
+          {modalOpen && modalType == "adminModal" ? (
             <UserPinModal
               callback={enterAsAdmin}
+              modalState={modalOpen}
+              setModalState={setModalOpen}
+            />
+          ) : modalOpen && modalType == "timeClock" ? (
+            <TimeClockModal
               modalState={modalOpen}
               setModalState={setModalOpen}
             />
           ) : (
             ""
           )}
+
+          <Card
+            name={"time clock"}
+            color={"rgb(190,10,80)"}
+            callback={openTimClockModal}
+          />
         </div>
       </main>
 
