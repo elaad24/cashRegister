@@ -11,8 +11,12 @@ export async function endShift(userPin) {
   return await http.post(`${apiURL}timeClock?req=endShift&userPin=${userPin}`);
 }
 
-export async function updateShift(shiftID) {
-  return await http.put(`${apiURL}timeClock?req=updateShift`, shiftID);
+export async function updateShift(shiftID, startTime, endTime) {
+  return await http.put(`${apiURL}timeClock?req=updateShift`, {
+    shiftID,
+    startTime,
+    endTime,
+  });
 }
 
 export async function deleteShift(shiftID) {
@@ -21,10 +25,10 @@ export async function deleteShift(shiftID) {
   );
 }
 
-export async function addShift(userPinNumber, startTime, endTime) {
+export async function addShift(userPinNumber, startTimeUnix, endTimeUnix) {
   return await http.post(`${apiURL}timeClock?req=addShift`, {
     userPinNumber,
-    startTime,
-    endTime,
+    startTimeUnix,
+    endTimeUnix,
   });
 }

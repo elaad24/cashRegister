@@ -79,6 +79,73 @@ export default async function timeClock(req, res) {
             `goodbay ${user_name} ${user_last_name}  you worked ${duration} `
           );
       }
+    } else if (
+      /* need to test it !!!!!! */
+      req.method === "DELETE" &&
+      req.query.req == "deleteShift" &&
+      req.query.shiftID != undefined &&
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
+      /* only admin can do this  */
+
+      //http://localhost:3000/api/timeClock?req=deleteShift&shiftID=NUMBER
+      const qry = `DELETE FROM time_clock WHERE id = ${req.query.shiftID}`;
+      const result = await handler(mysql, qry);
+      console.log(result);
+      res.status(200).json({
+        ans: "shift deleted",
+      });
+    } else if (
+      req.method === "POST" &&
+      req.query.req == "addShift" &&
+      req.body.userPinNumber != undefined &&
+      req.body.startTimeUnix != undefined &&
+      req.body.endTimeUnix != undefined &&
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
+      /* need to test it !!!! */
+      /* only admin can do this  */
+      //http://localhost:3000/api/timeClock?req=startShift
+      const userPin = req.query.userPinNumber;
+
+      const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
+      const result1 = await handler(mysql, qry1);
+
+      if (result1.length == 0) {
+        res.status(400).json("error - wrong pin number ");
+      }
+      const user_name = result1[0].name;
+      const user_last_name = result1[0].last_name;
+      const userID = result1[0].id;
+      const startShift = req.body.startTimeUnix;
+      const endShift = req.body.endTimeUnix;
+
+      const durationInUnix = endShift - startShift;
+
+      const format_time = (uinx) => {
+        const dtFormat = new Intl.DateTimeFormat("en-GB", {
+          timeStyle: "medium",
+          timeZone: "UTC",
+        });
+
+        return dtFormat.format(new Date(uinx * 1e3));
+      };
+
+      const duration = format_time(durationInUnix);
+
+      const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},FROM_UNIXTIME(${startShift}),FROM_UNIXTIME(${endShift}),1,${duration})`;
+
+      const result2 = await handler(mysql, qry2);
+      console.log(result2);
+      if (result2.affectedRows == 1) {
+        res
+          .status(201)
+          .json(
+            `shift inserted as  ${user_name} ${user_last_name} </br> durtion ${duration} `
+          );
+      }
     } else {
       res.status(400).json({
         error: "doesnt match any api req in time clock ",
