@@ -14,6 +14,8 @@ export default async function users(req, res) {
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
+      /* only admin can do this  */
+
       //console.log(req.headers.user_ok);
       //http://localhost:3000/api/users?req=removeUser&userID=NUMBER
       const qry = `DELETE FROM employees WHERE employees.id = ${req.query.userID}`;
@@ -28,6 +30,8 @@ export default async function users(req, res) {
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
+      /* only admin can do this  */
+
       // localhost:3000/api/users?req=addUser
 
       let qry = `INSERT INTO employees (id, name,last_name,user_pin,with_permission,telephone_number) VALUES 
@@ -54,6 +58,8 @@ export default async function users(req, res) {
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
+      /* only admin can do this  */
+
       // localhost:3000/api/users?req=updatingUser
 
       const userId = req.body.id;
