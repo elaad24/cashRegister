@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { startShift, endShift } from "../pages/service/usersService";
+import { startShift, endShift } from "../pages/service/timeClockService";
 
 // check why the req to server are bad
 
