@@ -4,7 +4,7 @@ import { startShift, endShift } from "../pages/service/timeClockService";
 
 // check why the req to server are bad
 
-const UserPinModal = ({ callback, modalState, setModalState }) => {
+const TimeClockModal = ({ callback, modalState, setModalState }) => {
   const pinNumberRef = useRef();
 
   const [action, setAction] = useState("");
@@ -163,4 +163,4 @@ const UserPinModal = ({ callback, modalState, setModalState }) => {
   );
 };
 
-export default UserPinModal;
+export default TimeClockModal;
