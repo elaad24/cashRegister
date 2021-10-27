@@ -108,7 +108,7 @@ export default async function timeClock(req, res) {
       /* need to test it !!!! */
       /* only admin can do this  */
       //http://localhost:3000/api/timeClock?req=addShift
-      const userPin = req.query.userPinNumber;
+      const userPin = req.body.userPinNumber;
 
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
       const result1 = await handler(mysql, qry1);
@@ -135,7 +135,7 @@ export default async function timeClock(req, res) {
 
       const duration = format_time(durationInUnix);
 
-      const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},FROM_UNIXTIME(${startShift}),FROM_UNIXTIME(${endShift}),1,${duration})`;
+      const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},FROM_UNIXTIME(${startShift}),FROM_UNIXTIME(${endShift}),1,"${duration}")`;
 
       const result2 = await handler(mysql, qry2);
       console.log(result2);
