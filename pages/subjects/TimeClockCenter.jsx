@@ -43,16 +43,20 @@ const TimeClockCenter = (props) => {
                   <td>{data.id}</td>
                   <td>{data.user_id}</td>
                   <td>
-                    {new Intl.DateTimeFormat("en-GB", {
-                      dateStyle: "short",
-                      timeStyle: "medium",
-                    }).format(data.start)}
+                    {data.start == 0
+                      ? ""
+                      : new Intl.DateTimeFormat("en-GB", {
+                          dateStyle: "short",
+                          timeStyle: "medium",
+                        }).format(data.start)}
                   </td>
                   <td>
-                    {new Intl.DateTimeFormat("en-GB", {
-                      dateStyle: "short",
-                      timeStyle: "medium",
-                    }).format(data.finish)}
+                    {data.finish == 0
+                      ? ""
+                      : new Intl.DateTimeFormat("en-GB", {
+                          dateStyle: "short",
+                          timeStyle: "medium",
+                        }).format(data.finish)}
                   </td>
                   <td>{data.completed == "1" ? "true" : "false"}</td>
                   <td>{data.duration.slice(0, 8)}</td>
@@ -86,7 +90,7 @@ export async function getStaticProps(context) {
   const qry = `SELECT id,user_id,UNIX_TIMESTAMP(start) as start,UNIX_TIMESTAMP(finish) as finish,completed,duration FROM time_clock`;
 
   const results = await handler(mysql, qry);
-
+  console.log(results);
   /* multply the start and finish times 1000 so it will be in miliseconds and not seconds  */
   return {
     props: {
@@ -94,7 +98,7 @@ export async function getStaticProps(context) {
         id: data.id,
         user_id: data.user_id,
         start: data.start * 1e3,
-        finish: data.finish * 1e3,
+        finish: data.finish == null ? 0 : data.finish * 1e3,
         completed: data.completed,
         duration: data.duration,
       })),
