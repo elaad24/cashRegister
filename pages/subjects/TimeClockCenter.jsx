@@ -1,14 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import handler, { mysql } from "../api/endpoint";
 import Link from "next/link";
 import styles from "../../styles/Home.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { deleteShift } from "../service/timeClockService";
+import TimeClockCenterModal from "../../components/TimeClockCenterModal";
 
 const TimeClockCenter = (props) => {
   let headersTitles = Object.keys(props.allData[0]);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [tempItem, setTempItem] = useState({});
+  const [actionType, setActionType] = useState("");
+  /* action type - add || update */
+
+  const deleteShiftFunction = async (shiftID) => {
+    await deleteShift(shiftID);
+    window.location.reload();
+  };
+
+  const openModal = (item, actionType) => {
+    setTempItem(item);
+    setActionType(actionType);
+    setModalOpen(true);
+  };
+
   return (
     <div>
+      {modalOpen == true && actionType == "add" ? (
+        <TimeClockCenterModal
+          modalState={modalOpen}
+          setModalState={setModalOpen}
+          actionType={actionType}
+        />
+      ) : modalOpen == true && actionType == "update" && tempItem != {} ? (
+        <TimeClockCenterModal
+          modalState={modalOpen}
+          setModalState={setModalOpen}
+          actionType={actionType}
+        />
+      ) : (
+        ""
+      )}
       <div className="d-flex justify-content-between ">
         <Link href={`/`}>
           <a className="m-4 btn btn-primary">home</a>
@@ -18,7 +51,7 @@ const TimeClockCenter = (props) => {
         <div>
           <button
             className="btn btn-success m-4"
-            /* onClick={() => openModal({}, "add")} */
+            onClick={() => openModal({}, "add")}
           >
             {"add new shift"}
           </button>
@@ -69,7 +102,7 @@ const TimeClockCenter = (props) => {
                     </button>
                     <button
                       className="btn btn-danger "
-                      /* onClick={() => openModal({}, "delete")} */
+                      onClick={() => deleteShiftFunction(data.id)}
                     >
                       {"delete shift"}
                     </button>
