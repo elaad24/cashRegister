@@ -80,15 +80,15 @@ export default async function timeClock(req, res) {
           );
       }
     } else if (
-      /* need to test it !!!!!! */
       req.method === "DELETE" &&
       req.query.req == "deleteShift" &&
       req.query.shiftID != undefined &&
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
-      /* only admin can do this  */
+      /* need to test it !!!!!! */
 
+      /* only admin can do this  */
       //http://localhost:3000/api/timeClock?req=deleteShift&shiftID=NUMBER
       const qry = `DELETE FROM time_clock WHERE id = ${req.query.shiftID}`;
       const result = await handler(mysql, qry);
@@ -107,7 +107,7 @@ export default async function timeClock(req, res) {
     ) {
       /* need to test it !!!! */
       /* only admin can do this  */
-      //http://localhost:3000/api/timeClock?req=startShift
+      //http://localhost:3000/api/timeClock?req=addShift
       const userPin = req.query.userPinNumber;
 
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
@@ -144,6 +144,60 @@ export default async function timeClock(req, res) {
           .status(201)
           .json(
             `shift inserted as  ${user_name} ${user_last_name} </br> durtion ${duration} `
+          );
+      }
+    } else if (
+      req.method === "PUT" &&
+      req.query.req == "updateShift" &&
+      req.body.shiftID != undefined &&
+      req.body.startTimeUnix != undefined &&
+      req.body.endTimeUnix != undefined &&
+      req.body.completed != undefined &&
+      (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
+        req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
+    ) {
+      /* need to test it !!!! */
+      /* only admin can do this  */
+      //http://localhost:3000/api/timeClock?req=updateShift
+
+      const shiftID = req.body.shiftID;
+      const startShift = req.body.startTimeUnix;
+      const endShift = req.body.endTimeUnix;
+      const shiftCompleted = req.body.completed;
+
+      let durationInUnix = 0;
+
+      if (shiftCompleted == "true") {
+        shiftCompleted = 1;
+        durationInUnix = endShift - startShift;
+      } else if (shiftCompleted == "false") {
+        shiftCompleted = 0;
+      }
+
+      const format_time = (uinx) => {
+        const dtFormat = new Intl.DateTimeFormat("en-GB", {
+          timeStyle: "medium",
+          timeZone: "UTC",
+        });
+        return dtFormat.format(new Date(uinx * 1e3));
+      };
+
+      const duration = format_time(durationInUnix);
+
+      const qry = `UPDATE time_clock set
+       start=${startShift} ,
+       finish=${endShift},
+       completed=${shiftCompleted},
+       duration=${duration}
+       where time_clock.id=${shiftID}`;
+
+      const result = await handler(mysql, qry);
+
+      if (result.affectedRows == 1) {
+        res
+          .status(201)
+          .json(
+            `shift updated as  ${user_name} ${user_last_name} </br> durtion ${duration} `
           );
       }
     } else {

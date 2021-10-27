@@ -11,11 +11,17 @@ export async function endShift(userPin) {
   return await http.post(`${apiURL}timeClock?req=endShift&userPin=${userPin}`);
 }
 
-export async function updateShift(shiftID, startTime, endTime) {
+export async function updateShift(
+  shiftID,
+  startTimeUnix,
+  endTimeUnix,
+  completed
+) {
   return await http.put(`${apiURL}timeClock?req=updateShift`, {
     shiftID,
-    startTime,
-    endTime,
+    startTimeUnix,
+    endTimeUnix,
+    completed,
   });
 }
 
