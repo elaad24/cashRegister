@@ -13,18 +13,12 @@ const TimeClockCenterModal = ({
   const pinNumberRef = useRef();
   const startShiftRef = useRef(item?.start);
   const endShiftRef = useRef(item?.finish);
-  console.log("start shiftref:", endShiftRef);
-  console.log("end shiftref:", endShiftRef);
 
   let [pinError, setPinError] = useState("");
   let [startShiftError, setstartShiftError] = useState("");
   let [endShiftError, setEndShiftError] = useState("");
+  let [timeShiftError, setTimeShiftError] = useState("");
   let [tempItem, setTempItem] = useState(undefined);
-
-  console.log("from modal", item);
-
-  console.log(startShiftRef);
-  console.log(endShiftRef);
 
   useEffect(() => {
     if (item != undefined) {
@@ -43,7 +37,7 @@ const TimeClockCenterModal = ({
     } else {
       setPinError("");
     }
-    if (startShiftRef.current.value == "") {
+    if (startShiftRef.current.value.length <= 1) {
       setstartShiftError("start shift must have date and time ");
       return false;
     } else {
@@ -55,6 +49,16 @@ const TimeClockCenterModal = ({
     } else {
       setEndShiftError("");
     }
+    if (
+      dateTimeStringToUnix(endShiftRef.current.value) -
+        dateTimeStringToUnix(startShiftRef.current.value) <=
+      0
+    ) {
+      setTimeShiftError("end shift must be after the start shift ");
+      return false;
+    } else {
+      setTimeShiftError("");
+    }
 
     return true;
   };
@@ -64,14 +68,6 @@ const TimeClockCenterModal = ({
   };
 
   const addShiftFunction = async () => {
-    console.log(pinNumberRef.current.value);
-    console.log(startShiftRef.current.value);
-    console.log(endShiftRef.current.value);
-    console.log(
-      "duration",
-      dateTimeStringToUnix(endShiftRef.current.value) -
-        dateTimeStringToUnix(startShiftRef.current.value)
-    );
     const { data } = await addShift(
       pinNumberRef.current.value,
       dateTimeStringToUnix(startShiftRef.current.value),
@@ -83,14 +79,6 @@ const TimeClockCenterModal = ({
   };
 
   const updateShiftFunction = async () => {
-    console.log(pinNumberRef.current.value);
-    console.log(startShiftRef.current.value);
-    console.log(endShiftRef.current.value);
-    console.log(
-      "duration",
-      dateTimeStringToUnix(endShiftRef.current.value) -
-        dateTimeStringToUnix(startShiftRef.current.value)
-    );
     let completedValue = 0;
     if (endShiftRef.current.value != "") {
       completedValue = 1;
@@ -176,20 +164,23 @@ const TimeClockCenterModal = ({
           <Form.Group>
             <Form.Label>
               {"start of the shift"}
-              {/*  {startShiftError ? (
+              {startShiftError ? (
                 <>
-                  <br /> <small className="text-danger">{startShiftError}</small>
+                  <br />{" "}
+                  <small className="text-danger">{startShiftError}</small>
                 </>
               ) : (
                 ""
-              )} */}
+              )}
             </Form.Label>
             <Form.Control
-              /*               className={startShiftError ? "is-invalid" : ""}
-               */
+              className={startShiftError ? "is-invalid" : ""}
               type="datetime-local"
-              min="2021-10-01T00:00"
-              max="2022-12-31T00:00"
+              max={
+                tempItem?.finish
+                  ? new Date(tempItem.finish).toISOString().slice(0, 19)
+                  : ""
+              }
               placeholder={startShiftError || "start shift date and time "}
               defaultValue={
                 tempItem?.start
@@ -204,19 +195,22 @@ const TimeClockCenterModal = ({
           <Form.Group>
             <Form.Label>
               {"end of the shift"}
-              {/*  {endShiftError ? (
+              {endShiftError ? (
                 <>
                   <br /> <small className="text-danger">{endShiftError}</small>
                 </>
               ) : (
                 ""
-              )} */}
+              )}
             </Form.Label>
             <Form.Control
-              /*               className={endShiftError ? "is-invalid" : ""}
-               */
+              className={endShiftError ? "is-invalid" : ""}
               type="datetime-local"
-              min="2021-10-01T00:00"
+              min={
+                tempItem?.start
+                  ? new Date(tempItem.start).toISOString().slice(0, 19)
+                  : ""
+              }
               max="2022-12-31T00:00"
               defaultValue={
                 tempItem?.finish
@@ -229,6 +223,13 @@ const TimeClockCenterModal = ({
               onClick={(e) => console.log(e)}
             />
           </Form.Group>
+          {timeShiftError ? (
+            <>
+              <br /> <small className="text-danger">{timeShiftError}</small>
+            </>
+          ) : (
+            ""
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>
