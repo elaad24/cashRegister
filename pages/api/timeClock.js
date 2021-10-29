@@ -3,6 +3,7 @@ import handler, { mysql } from "./endpoint";
 export default async function timeClock(req, res) {
   try {
     if (
+      // empoyees start shift
       req.method === "POST" &&
       req.query.req == "startShift" &&
       req.query.userPin != undefined
@@ -10,6 +11,7 @@ export default async function timeClock(req, res) {
       const userPin = req.query.userPin;
       //http://localhost:3000/api/timeClock?req=startShift&userPin=NUMBER
 
+      // get info about the user from his userPin
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
       const result1 = await handler(mysql, qry1);
 
@@ -20,10 +22,13 @@ export default async function timeClock(req, res) {
       const user_last_name = result1[0].last_name;
       const userID = result1[0].id;
 
+      //check if user alredy in shift
       const qry2 = `SELECT user_id from time_clock where user_id=${userID} and completed=0  `;
       const result2 = await handler(mysql, qry2);
 
       console.log("resultes2", result2[0]);
+
+      // add to data base the deatils about user start shift
       const qry3 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},null,null,0,0)`;
 
       if (result2[0]) {
@@ -38,6 +43,7 @@ export default async function timeClock(req, res) {
         }
       }
     } else if (
+      //empoyees end shift
       req.method === "POST" &&
       req.query.req == "endShift" &&
       req.query.userPin != undefined
@@ -45,6 +51,7 @@ export default async function timeClock(req, res) {
       const userPin = req.query.userPin;
       //http://localhost:3000/api/timeClock?req=endShift&userPin=NUMBER
 
+      // get info about the user from his userPin
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
       const result1 = await handler(mysql, qry1);
       console.log(result1);
@@ -64,6 +71,7 @@ export default async function timeClock(req, res) {
           .status(401)
           .json({ error: `${user_name} ${user_last_name} not in shift ` });
       } else {
+        //get user start time in unix
         const qry3 = `SELECT UNIX_TIMESTAMP(start) as start  from time_clock where user_id=${userID} and completed=0 `;
         const result3 = await handler(mysql, qry3);
 
@@ -77,6 +85,7 @@ export default async function timeClock(req, res) {
         const timeStamp = Math.floor(Date.now() / 1000);
         const durationInUnix = timeStamp - start;
 
+        // convert delta time in unix to HH:mm:ss
         const format_time = (uinx) => {
           const dtFormat = new Intl.DateTimeFormat("en-GB", {
             timeStyle: "medium",
@@ -88,6 +97,7 @@ export default async function timeClock(req, res) {
 
         const duration = format_time(durationInUnix);
 
+        // the user shift with all the end shift data
         const qry4 = `UPDATE time_clock SET  finish = FROM_UNIXTIME(${timeStamp}) ,completed = 1 ,duration= '${duration}' where user_id=${userID} and completed=0`;
 
         const result4 = await handler(mysql, qry4);
@@ -100,16 +110,16 @@ export default async function timeClock(req, res) {
         }
       }
     } else if (
+      // delete the shift ONLY ADMIN CAN
       req.method === "DELETE" &&
       req.query.req == "deleteShift" &&
       req.query.shiftID != undefined &&
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
-      /* need to test it !!!!!! */
-
       /* only admin can do this  */
       //http://localhost:3000/api/timeClock?req=deleteShift&shiftID=NUMBER
+      // delete the shift from the shift id number
       const qry = `DELETE FROM time_clock WHERE id = ${req.query.shiftID}`;
       const result = await handler(mysql, qry);
       console.log(result);
@@ -117,6 +127,7 @@ export default async function timeClock(req, res) {
         ans: "shift deleted",
       });
     } else if (
+      // add new shift start and end time ONLY ADMIN CAN
       req.method === "POST" &&
       req.query.req == "addShift" &&
       req.body.userPinNumber != undefined &&
@@ -125,11 +136,11 @@ export default async function timeClock(req, res) {
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
-      /* need to test it !!!! */
       /* only admin can do this  */
       //http://localhost:3000/api/timeClock?req=addShift
       const userPin = req.body.userPinNumber;
 
+      // get info about the user from his userPin
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
       const result1 = await handler(mysql, qry1);
 
@@ -144,6 +155,7 @@ export default async function timeClock(req, res) {
 
       const durationInUnix = endShift - startShift;
 
+      // convert delta time in unix to HH:mm:ss
       const format_time = (uinx) => {
         const dtFormat = new Intl.DateTimeFormat("en-GB", {
           timeStyle: "medium",
@@ -154,7 +166,7 @@ export default async function timeClock(req, res) {
       };
 
       const duration = format_time(durationInUnix);
-
+      //  add all the shift data
       const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},FROM_UNIXTIME(${startShift}),FROM_UNIXTIME(${endShift}),1,"${duration}")`;
 
       const result2 = await handler(mysql, qry2);
@@ -167,6 +179,7 @@ export default async function timeClock(req, res) {
           );
       }
     } else if (
+      // to edit shift ONLY ADMIN CAN
       req.method === "PUT" &&
       req.query.req == "updateShift" &&
       req.body.shiftID != undefined &&
@@ -176,7 +189,6 @@ export default async function timeClock(req, res) {
       (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
         req.headers.cookie.split(";").indexOf(` adminRequest=true`) >= 0)
     ) {
-      /* need to test it !!!! */
       /* only admin can do this  */
       //http://localhost:3000/api/timeClock?req=updateShift
 
@@ -194,6 +206,7 @@ export default async function timeClock(req, res) {
         shiftCompleted = 0;
       }
 
+      // convert delta time in unix to HH:mm:ss
       const format_time = (uinx) => {
         const dtFormat = new Intl.DateTimeFormat("en-GB", {
           timeStyle: "medium",
@@ -204,6 +217,7 @@ export default async function timeClock(req, res) {
 
       const duration = format_time(durationInUnix);
 
+      //updata the data base with the data
       const qry = `UPDATE time_clock set
        start=${startShift} ,
        finish=${endShift},

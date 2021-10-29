@@ -2,6 +2,7 @@ import handler, { mysql } from "./endpoint";
 
 export default async function products(req, res) {
   if (
+    // to remove item ONLY ADMIN CAN
     req.method === "DELETE" &&
     req.query.req == "removeItem" &&
     req.query.productID != undefined &&
@@ -12,6 +13,7 @@ export default async function products(req, res) {
     /* only admin can do this  */
 
     //http://localhost:3000/api/products?req=removeItem&productID=NUMBER
+    // remove item with it's product id
     const qry = `DELETE FROM products WHERE products.id = ${req.query.productID}`;
     const result = await handler(mysql, qry);
     console.log(result);
@@ -19,6 +21,7 @@ export default async function products(req, res) {
       and: "item deleted",
     });
   } else if (
+    // to add new item ONLY ADMIN CAN
     req.method === "POST" &&
     req.query.req == "addProduct" &&
     (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
@@ -28,6 +31,7 @@ export default async function products(req, res) {
 
     // localhost:3000/api/products?req=addProduct
     const item = req.body;
+    // add new item
     let qry = `INSERT INTO products (id, name, price, item_group, color) VALUES 
     (NULL, '${item.name}', '${item.price}', '${item.item_group}', '${item.color}')`;
 
@@ -45,6 +49,7 @@ export default async function products(req, res) {
       });
     }
   } else if (
+    //edit item  ONLY ADMIN CAN
     req.method === "PUT" &&
     req.query.req == "updatingProduct" &&
     (req.headers.cookie.split(";").indexOf(`adminRequest=true`) >= 0 ||
@@ -57,6 +62,7 @@ export default async function products(req, res) {
     const itemId = req.body.id;
     const updatedItem = req.body;
 
+    //updata item
     let qry = `UPDATE products SET 
     name = '${updatedItem.name}',
      price = '${updatedItem.price}',
