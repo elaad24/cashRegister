@@ -23,6 +23,7 @@ const TimeClockCenter = (props) => {
     setTempItem(item);
     setActionType(actionType);
     setModalOpen(true);
+    console.log("from center", tempItem);
   };
 
   return (
@@ -38,6 +39,7 @@ const TimeClockCenter = (props) => {
           modalState={modalOpen}
           setModalState={setModalOpen}
           actionType={actionType}
+          item={tempItem}
         />
       ) : (
         ""
@@ -71,8 +73,10 @@ const TimeClockCenter = (props) => {
 
           <tbody>
             {props.allData.map((data) => {
+              let onShift = Boolean(data.completed);
+              console.log(data.start);
               return (
-                <tr>
+                <tr className={!onShift ? styles.onShift : ""}>
                   <td>{data.id}</td>
                   <td>{data.user_id}</td>
                   <td>
@@ -96,7 +100,19 @@ const TimeClockCenter = (props) => {
                   <td className="d-flex justify-content-center gap-4">
                     <button
                       className="btn btn-warning "
-                      /* onClick={() => openModal({}, "edit")} */
+                      onClick={() =>
+                        openModal(
+                          {
+                            id: data.id,
+                            user_id: data.user_id,
+                            start: data.start,
+                            finish: data.finish,
+                            completed: data.completed,
+                            duration: data.duration,
+                          },
+                          "update"
+                        )
+                      }
                     >
                       {"edit shift"}
                     </button>
