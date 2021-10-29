@@ -124,7 +124,6 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
-  justify-content: ;
 }
 
 .order {
@@ -248,4 +247,8 @@
 
 .my1 {
   margin-top: 70px;
+}
+
+.onShift {
+  background-color: rgb(235, 205, 167);
 }
