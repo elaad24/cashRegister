@@ -20,12 +20,22 @@ export default async function timeClock(req, res) {
       const user_last_name = result1[0].last_name;
       const userID = result1[0].id;
 
-      const qry2 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},null,null,0,0)`;
-
+      const qry2 = `SELECT user_id from time_clock where user_id=${userID} and completed=0  `;
       const result2 = await handler(mysql, qry2);
-      console.log(result2);
-      if (result2.affectedRows == 1) {
-        res.status(201).json(`welcome ${user_name} ${user_last_name} `);
+
+      console.log("resultes2", result2[0]);
+      const qry3 = `INSERT INTO time_clock (id,user_id,start,finish,completed,duration) VALUES (null,${userID},null,null,0,0)`;
+
+      if (result2[0]) {
+        res
+          .status(401)
+          .json({ error: `${user_name} ${user_last_name} already in shift ` });
+      } else {
+        const result3 = await handler(mysql, qry3);
+        console.log(result3);
+        if (result3.affectedRows == 1) {
+          res.status(201).json(`welcome ${user_name} ${user_last_name} `);
+        }
       }
     } else if (
       req.method === "POST" &&
@@ -45,39 +55,49 @@ export default async function timeClock(req, res) {
       const user_last_name = result1[0].last_name;
       const userID = result1[0].id;
 
-      const qry2 = `SELECT UNIX_TIMESTAMP(start) as start  from time_clock where user_id=${userID} and completed=0 `;
+      // check if empoye shift not completed
+      const qry2 = `SELECT user_id from time_clock where user_id=${userID} and completed=0  `;
       const result2 = await handler(mysql, qry2);
 
-      if (result2[0] == undefined) {
+      if (!result2[0]) {
         res
-          .status(400)
-          .json("error - wrong user or user does not start shift ");
-      }
-      const start = result2[0].start;
+          .status(401)
+          .json({ error: `${user_name} ${user_last_name} not in shift ` });
+      } else {
+        const qry3 = `SELECT UNIX_TIMESTAMP(start) as start  from time_clock where user_id=${userID} and completed=0 `;
+        const result3 = await handler(mysql, qry3);
 
-      const timeStamp = Math.floor(Date.now() / 1000);
-      const durationInUnix = timeStamp - start;
+        if (result3[0] == undefined) {
+          res
+            .status(400)
+            .json("error - wrong user or user does not start shift ");
+        }
+        const start = result3[0].start;
 
-      const format_time = (uinx) => {
-        const dtFormat = new Intl.DateTimeFormat("en-GB", {
-          timeStyle: "medium",
-          timeZone: "UTC",
-        });
+        const timeStamp = Math.floor(Date.now() / 1000);
+        const durationInUnix = timeStamp - start;
 
-        return dtFormat.format(new Date(uinx * 1e3));
-      };
+        const format_time = (uinx) => {
+          const dtFormat = new Intl.DateTimeFormat("en-GB", {
+            timeStyle: "medium",
+            timeZone: "UTC",
+          });
 
-      const duration = format_time(durationInUnix);
+          return dtFormat.format(new Date(uinx * 1e3));
+        };
 
-      const qry3 = `UPDATE time_clock SET  finish = FROM_UNIXTIME(${timeStamp}) ,completed = 1 ,duration= '${duration}' where user_id=${userID} and completed=0`;
+        const duration = format_time(durationInUnix);
 
-      const result3 = await handler(mysql, qry3);
-      if (result3.affectedRows == 1) {
-        res
-          .status(201)
-          .json(
-            `goodbay ${user_name} ${user_last_name}  you worked ${duration} `
-          );
+        const qry4 = `UPDATE time_clock SET  finish = FROM_UNIXTIME(${timeStamp}) ,completed = 1 ,duration= '${duration}' where user_id=${userID} and completed=0`;
+
+        const result4 = await handler(mysql, qry4);
+        if (result4.affectedRows == 1) {
+          res
+            .status(201)
+            .json(
+              `goodbay ${user_name} ${user_last_name}  you worked ${duration} `
+            );
+        }
       }
     } else if (
       req.method === "DELETE" &&

@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { startShift, endShift } from "../pages/service/timeClockService";
 
-// check why the req to server are bad
+// do thet if user alredy in shift cant start new one agian
 
 const TimeClockModal = ({ callback, modalState, setModalState }) => {
   const pinNumberRef = useRef();
@@ -54,9 +54,17 @@ const TimeClockModal = ({ callback, modalState, setModalState }) => {
       // function that send data to database
       try {
         if (action == "start") {
-          await startShiftFunction();
+          try {
+            await startShiftFunction();
+          } catch (err) {
+            alert(err.response.data.error);
+          }
         } else if (action == "end") {
-          await endShiftFunction();
+          try {
+            await endShiftFunction();
+          } catch (err) {
+            alert(err.response.data.error);
+          }
         }
         await closeModal();
       } catch (err) {
