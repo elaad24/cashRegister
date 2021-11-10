@@ -18,7 +18,6 @@ const ZReport = () => {
 
   useEffect(async () => {
     const { data } = await getTotalMoneyLast24Hours();
-    //console.log(data.result);
     setTotalMoneyLast24Hours([data.result]);
   }, []);
 
@@ -50,8 +49,6 @@ const ZReport = () => {
   return (
     <div className="d-flex flex-column justify-content-around m-5">
       <div className="d-flex justify-content-between ">
-        {/* <button className="m-4 btn btn-primary" onClick={}>home </button> */}
-
         <Link href={`/`}>
           <a className="m-4 btn btn-primary">home</a>
         </Link>

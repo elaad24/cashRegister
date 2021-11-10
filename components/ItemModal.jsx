@@ -82,7 +82,7 @@ const ItemModal = ({
           await closeModal();
           await window.location.reload();
         } catch (err) {
-         /*  if (err?.response?.data?.error?.name) {
+          /*  if (err?.response?.data?.error?.name) {
             setNameError(err.response.data.error.name);
           }
           if (err?.response?.data?.error?.price) {
@@ -99,7 +99,7 @@ const ItemModal = ({
           await closeModal();
           await window.location.reload();
         } catch (err) {
-         /*  if (err?.response?.data?.error?.name) {
+          /*  if (err?.response?.data?.error?.name) {
             setNameError(err.response.data.error.name);
           }
           if (err?.response?.data?.error?.price) {
