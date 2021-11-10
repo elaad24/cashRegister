@@ -1,5 +1,5 @@
 import http from "./http";
-import apiURL from "./urlEndPoint.json";
+import { apiURL } from "./urlEndPoint.json";
 
 // get sum of money from orders from last 24 hours
 export async function getTotalMoneyLast24Hours() {
