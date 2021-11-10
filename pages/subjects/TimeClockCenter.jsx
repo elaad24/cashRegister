@@ -74,7 +74,7 @@ const TimeClockCenter = (props) => {
           <tbody>
             {props.allData.map((data) => {
               let onShift = Boolean(data.completed);
-              console.log(data.start);
+
               return (
                 <tr className={!onShift ? styles.onShift : ""}>
                   <td>{data.id}</td>

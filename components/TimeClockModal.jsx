@@ -44,7 +44,9 @@ const TimeClockModal = ({ callback, modalState, setModalState }) => {
   };
 
   const endShiftFunction = async () => {
+    console.log("end shift start function ");
     const { data } = await endShift(pinNumberRef.current.value);
+    console.log("end shift end function ");
     console.log(data);
     alert(data);
   };

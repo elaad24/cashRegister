@@ -52,11 +52,15 @@ export default async function timeClock(req, res) {
       //http://localhost:3000/api/timeClock?req=endShift&userPin=NUMBER
 
       // get info about the user from his userPin
+      console.log("end shift in server started ");
       const qry1 = `SELECT id,name,last_name from employees WHERE user_pin=${userPin}`;
       const result1 = await handler(mysql, qry1);
       console.log(result1);
       if (result1.length == 0) {
-        res.status(400).json("error - wrong pin number ");
+        res
+          .status(400)
+          .json("error - wrong pin number ")
+          .error("wrong pin number");
       }
       const user_name = result1[0].name;
       const user_last_name = result1[0].last_name;
