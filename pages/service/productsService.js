@@ -1,5 +1,5 @@
 import http from "./http";
-import { apiURL } from "./urlEndPoint.json";
+import apiURL from "./urlEndPoint.json";
 
 export async function addProduct(product) {
   return await http.post(`${apiURL}products?req=addProduct`, product);

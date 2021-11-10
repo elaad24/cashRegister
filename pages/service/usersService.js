@@ -1,5 +1,5 @@
 import http from "./http";
-import { apiURL } from "./urlEndPoint.json";
+import apiURL from "./urlEndPoint.json";
 
 export async function getUsers() {
   return await http.get(`${apiURL}users?req=getUsers`);
